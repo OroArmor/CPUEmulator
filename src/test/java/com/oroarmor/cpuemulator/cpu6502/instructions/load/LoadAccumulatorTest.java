@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.oroarmor.cpuemulator.cpu6502.instructions.loadstore;
+package com.oroarmor.cpuemulator.cpu6502.instructions.load;
 
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
@@ -139,8 +139,6 @@ class LoadAccumulatorTest {
     void loadAccumulatorAbsolute() {
         CPU6502 cpu = new CPU6502();
         Memory memory = new Memory();
-
-        cpu.setXRegister((byte) 0x10);
 
         // lda $ABCD
         // ad   $ABCD

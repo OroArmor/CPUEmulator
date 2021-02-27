@@ -44,4 +44,22 @@ public class LoadOperations {
         }
         return false;
     }
+
+    public static boolean loadX(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
+        if(currentOpCycle > instruction.getMaxCycles()) {
+            throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", instruction, instruction.getMaxCycles(), currentOpCycle));
+        }
+
+        if (instruction.getAddressingMode().address(currentOpCycle, cpu, memory)) {
+            int index = cpu.getCurrentAddressPointer();
+            byte newX = memory.read(index);
+            cpu.setXRegister(newX);
+            cpu.incrementProgramCounter();
+
+            byte flags = (byte) (((newX < 0 ? 0b10000000 : 0) + (newX == 0 ? 0b00000010 : 0)) | cpu.getFlags().toByte());
+            cpu.getFlags().fromByte(flags);
+            return true;
+        }
+        return false;
+    }
 }

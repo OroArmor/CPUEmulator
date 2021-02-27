@@ -24,23 +24,24 @@
 
 package com.oroarmor.cpuemulator.cpu6502;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FlagsTest {
     @Test
     public void testFromByte() {
         Flags f = new Flags();
         f.fromByte((byte) 0b10100001);
-        assertEquals( new Flags(true, false, false, false, false, false ,true), f, "From byte is correct");
+        assertEquals(new Flags(true, false, false, false, false, false, true), f, "From byte is correct");
     }
 
     @Test
     public void testToByte() {
-        Flags f = new Flags(true, false, false, false, false, false ,true);
+        Flags f = new Flags(true, false, false, false, false, false, true);
         byte b = f.toByte();
-        assertEquals((byte) 0b10100001, b,"To byte is correct");
+        assertEquals((byte) 0b10100001, b, "To byte is correct");
     }
 
     @Test

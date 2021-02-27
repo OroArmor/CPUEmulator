@@ -24,19 +24,39 @@
 
 package com.oroarmor.cpuemulator.cpu6502;
 
+/**
+ * A helper class for representing the flags of the {@link CPU6502}
+ * <table>
+ * <tr><th>Byte</th><th>Name</th><th>Code</th></tr>
+ * <tr><td>0</td><td>Carry Flag</td><td>C</td></tr>
+ * <tr><td>1</td><td>Zero Flag</td><td>Z</td></tr>
+ * <tr><td>2</td><td>Interrupt Disable Flag</td><td>I</td></tr>
+ * <tr><td>3</td><td>Decimal Mode Flag</td><td>D</td></tr>
+ * <tr><td>4</td><td>Break Flag</td><td>B</td></tr>
+ * <tr><td>5</td><td>unused</td><td>U</td></tr>
+ * <tr><td>6</td><td>Overflow Flag</td><td>O</td></tr>
+ * <tr><td>7</td><td>Negative Flag</td><td>N</td></tr>
+ * </table>
+ */
 public class Flags {
+    private final boolean unusedFlag = true;
     private boolean carryFlag = false;
     private boolean zeroFlag = false;
     private boolean interruptDisableFlag = false;
     private boolean decimalModeFlag = false;
-    private final boolean unusedFlag = true;
     private boolean breakFlag = false;
     private boolean overflowFlag = false;
     private boolean negativeFlag = false;
 
+    /**
+     * Create default flags
+     */
     public Flags() {
     }
 
+    /**
+     * Set the individual flags on creation
+     */
     public Flags(boolean carryFlag, boolean zeroFlag, boolean interruptDisableFlag, boolean decimalModeFlag, boolean breakFlag, boolean overflowFlag, boolean negativeFlag) {
         this.carryFlag = carryFlag;
         this.zeroFlag = zeroFlag;
@@ -47,6 +67,11 @@ public class Flags {
         this.negativeFlag = negativeFlag;
     }
 
+    /**
+     * Reads the byte into the different indexes of the flag
+     *
+     * @param b The byte to read from
+     */
     public void fromByte(byte b) {
         this.carryFlag = 0b00000001 == (b & 0b0000001);
         this.zeroFlag = 0b00000010 == (b & 0b00000010);
@@ -57,6 +82,11 @@ public class Flags {
         this.negativeFlag = 0b10000000 == (b & 0b10000000);
     }
 
+    /**
+     * Writes the flags into a byte
+     *
+     * @return The byte for the flags
+     */
     public byte toByte() {
         return (byte) ((getValue(carryFlag)) +
                 (getValue(zeroFlag) << 1) +
@@ -73,6 +103,12 @@ public class Flags {
         return (byte) (b ? 1 : 0);
     }
 
+    /**
+     * Sets the flag at the index to the value
+     *
+     * @param flagBit The index of the flag (0 to 7)
+     * @param value   The value for the flag
+     */
     public void setFlag(byte flagBit, boolean value) {
         switch (flagBit) {
             case 0:
@@ -111,6 +147,12 @@ public class Flags {
         return this.toByte() == flags.toByte();
     }
 
+    /**
+     * Gets the flag at the index to the value
+     *
+     * @param flagBit The index of the flag (0 to 7)
+     * @return The value for the flag
+     */
     public boolean getFlag(byte flagBit) {
         switch (flagBit) {
             case 0:

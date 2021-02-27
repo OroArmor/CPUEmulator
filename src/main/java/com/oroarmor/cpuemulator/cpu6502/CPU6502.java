@@ -24,18 +24,67 @@
 
 package com.oroarmor.cpuemulator.cpu6502;
 
+/**
+ * A class representing the 6502 CPU and its registers
+ */
 public class CPU6502 {
+    private final Flags flags = new Flags();
     private int programCounter = 0xFFFC;
     private int nextFreeStackLocation = 0x0;
     private int accumulator = 0x0;
     private int xRegister = 0x0;
     private int yRegister = 0x0;
-    private final Flags flags = new Flags();
-
     private CPU6502Instructions currentInstruction;
     private int currentInstructionCycle;
 
     private int currentAddressPointer = 0;
+
+    /**
+     * Resets the CPU
+     */
+    public void reset() {
+        programCounter = 0xFFFC;
+        nextFreeStackLocation = 0x0;
+        accumulator = 0x0;
+        xRegister = 0x0;
+        yRegister = 0x0;
+        flags.fromByte((byte) 0b00000000);
+        currentInstruction = null;
+        currentInstructionCycle = 0;
+    }
+
+    /**
+     * Clocks the CPU once
+     *
+     * @param memory The memory for the CPU
+     */
+    public void tick(Memory memory) {
+        if (currentInstruction == null) {
+            currentInstruction = CPU6502Instructions.getFrom(memory.read(programCounter));
+            if (currentInstruction == null || memory.read(programCounter) == 0x00) {
+                throw new UnsupportedOperationException(String.format("Unknown Op Code: %s", Integer.toHexString(memory.read(programCounter)).toUpperCase()));
+            }
+            programCounter++;
+            currentInstructionCycle = 1;
+            return;
+        }
+
+        currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction) ? null : currentInstruction;
+        currentInstructionCycle++;
+    }
+
+
+    public void incrementProgramCounter() {
+        this.programCounter++;
+    }
+
+    public int getCurrentAddressPointer() {
+        return currentAddressPointer;
+    }
+
+    public void setCurrentAddressPointer(int currentAddressPointer) {
+        this.currentAddressPointer = currentAddressPointer;
+    }
 
     public int getProgramCounter() {
         return programCounter;
@@ -48,8 +97,6 @@ public class CPU6502 {
     public int getNextFreeStackLocation() {
         return nextFreeStackLocation;
     }
-
-
 
     public void setNextFreeStackLocation(byte nextFreeStackLocation) {
         this.nextFreeStackLocation = nextFreeStackLocation;
@@ -81,43 +128,5 @@ public class CPU6502 {
 
     public Flags getFlags() {
         return flags;
-    }
-
-    public void tick(Memory memory) {
-        if(currentInstruction == null) {
-            currentInstruction = CPU6502Instructions.getFrom(memory.read(programCounter));
-            if(currentInstruction == null || memory.read(programCounter) == 0x00) {
-                throw new UnsupportedOperationException(String.format("Unknown Op Code: %s", Integer.toHexString(memory.read(programCounter)).toUpperCase()));
-            }
-            programCounter++;
-            currentInstructionCycle = 1;
-            return;
-        }
-
-        currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction) ? null : currentInstruction;
-        currentInstructionCycle ++;
-    }
-
-    public void incrementProgramCounter() {
-        this.programCounter++;
-    }
-
-    public int getCurrentAddressPointer() {
-        return currentAddressPointer;
-    }
-
-    public void setCurrentAddressPointer(int currentAddressPointer) {
-        this.currentAddressPointer = currentAddressPointer;
-    }
-
-    public void reset() {
-        programCounter = 0xFFFC;
-        nextFreeStackLocation = 0x0;
-        accumulator = 0x0;
-        xRegister = 0x0;
-        yRegister = 0x0;
-        flags.fromByte((byte) 0b00000000);
-        currentInstruction = null;
-        currentInstructionCycle = 0;
     }
 }

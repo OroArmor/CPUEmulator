@@ -26,30 +26,53 @@ package com.oroarmor.cpuemulator.cpu6502.instructions;
 
 import java.util.function.Consumer;
 
-import com.oroarmor.cpuemulator.cpu6502.*;
+import com.oroarmor.cpuemulator.cpu6502.CPU6502;
+import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
+import com.oroarmor.cpuemulator.cpu6502.Memory;
 
 public class LoadOperations {
+    /**
+     * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into {@link CPU6502#getAccumulator}
+     *
+     * @see LoadOperations#loadValue(int, CPU6502, Memory, CPU6502Instructions, Consumer)
+     */
     public static boolean loadAccumulator(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
         return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setAccumulator);
     }
 
+    /**
+     * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into {@link CPU6502#getXRegister()}
+     *
+     * @see LoadOperations#loadValue(int, CPU6502, Memory, CPU6502Instructions, Consumer)
+     */
     public static boolean loadX(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
         return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setXRegister);
     }
 
+    /**
+     * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into {@link CPU6502#getYRegister()}
+     *
+     * @see LoadOperations#loadValue(int, CPU6502, Memory, CPU6502Instructions, Consumer)
+     */
     public static boolean loadY(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
         return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setYRegister);
     }
 
-    private static boolean loadValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Consumer<Byte> setter) {
-        if(currentOpCycle > instruction.getMaxCycles()) {
+    /**
+     * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into the consumer for the register set
+     *
+     * @param registerSetter The consumer for setting the cpu register
+     * @see CPU6502Instructions.CPU6502InstructionProcessor
+     */
+    public static boolean loadValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Consumer<Byte> registerSetter) {
+        if (currentOpCycle > instruction.getMaxCycles()) {
             throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", instruction, instruction.getMaxCycles(), currentOpCycle));
         }
 
         if (instruction.getAddressingMode().address(currentOpCycle, cpu, memory)) {
             int index = cpu.getCurrentAddressPointer();
             byte newValue = memory.read(index);
-            setter.accept(newValue);
+            registerSetter.accept(newValue);
             cpu.incrementProgramCounter();
 
             byte flags = (byte) (((newValue < 0 ? 0b10000000 : 0) + (newValue == 0 ? 0b00000010 : 0)) | cpu.getFlags().toByte());

@@ -24,12 +24,31 @@
 
 package com.oroarmor.cpuemulator.cpu6502;
 
+/**
+ * A wrapper class for the memory of the cpu
+ */
 public class Memory {
+    /**
+     * The memory
+     */
     public final byte[] memory = new byte[0xFFFF];
-    public void setByte(int i, byte code) {
-        memory[i] = code;
+
+    /**
+     * Sets the byte at location to the new value
+     *
+     * @param location The location
+     * @param value    The value
+     */
+    public void setByte(int location, byte value) {
+        memory[location] = value;
     }
 
+    /**
+     * Returns the byte at location
+     *
+     * @param location The location
+     * @return The value
+     */
     public byte read(int location) {
         return memory[location];
     }

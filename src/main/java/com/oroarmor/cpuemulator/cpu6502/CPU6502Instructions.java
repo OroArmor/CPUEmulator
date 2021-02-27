@@ -74,7 +74,13 @@ public enum CPU6502Instructions {
     LDX_ABS(0xAE, LoadOperations::loadX, AddressingModes::absolute, 4),
     LDX_ABSY(0xBE, LoadOperations::loadX, AddressingModes::absoluteY, 5),
 
-    LDY, STA, STX, STY,
+    /* LDY Opertations */
+    LDY_IMM(0xA0, LoadOperations::loadY, AddressingModes::immediate, 2),
+    LDY_ZP(0xA4, LoadOperations::loadY, AddressingModes::zeroPage, 3),
+    LDY_ZPY(0xB4, LoadOperations::loadY, AddressingModes::zeroPageX, 4),
+    LDY_ABS(0xAC, LoadOperations::loadY, AddressingModes::absolute, 4),
+    LDY_ABSY(0xBC, LoadOperations::loadY, AddressingModes::absoluteX, 5),
+    STA, STX, STY,
 
     /* */
     TAX, TAY, TXA, TYA,

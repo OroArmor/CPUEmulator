@@ -24,39 +24,35 @@
 
 package com.oroarmor.cpuemulator.cpu6502.instructions;
 
+import java.util.function.Consumer;
+
 import com.oroarmor.cpuemulator.cpu6502.*;
 
 public class LoadOperations {
     public static boolean loadAccumulator(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        if(currentOpCycle > instruction.getMaxCycles()) {
-            throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", instruction, instruction.getMaxCycles(), currentOpCycle));
-        }
-
-        if (instruction.getAddressingMode().address(currentOpCycle, cpu, memory)) {
-            int index = cpu.getCurrentAddressPointer();
-            byte newAccumulator = memory.read(index);
-            cpu.setAccumulator(newAccumulator);
-            cpu.incrementProgramCounter();
-
-            byte flags = (byte) (((newAccumulator < 0 ? 0b10000000 : 0) + (newAccumulator == 0 ? 0b00000010 : 0)) | cpu.getFlags().toByte());
-            cpu.getFlags().fromByte(flags);
-            return true;
-        }
-        return false;
+        return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setAccumulator);
     }
 
     public static boolean loadX(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
+        return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setXRegister);
+    }
+
+    public static boolean loadY(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
+        return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setYRegister);
+    }
+
+    private static boolean loadValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Consumer<Byte> setter) {
         if(currentOpCycle > instruction.getMaxCycles()) {
             throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", instruction, instruction.getMaxCycles(), currentOpCycle));
         }
 
         if (instruction.getAddressingMode().address(currentOpCycle, cpu, memory)) {
             int index = cpu.getCurrentAddressPointer();
-            byte newX = memory.read(index);
-            cpu.setXRegister(newX);
+            byte newValue = memory.read(index);
+            setter.accept(newValue);
             cpu.incrementProgramCounter();
 
-            byte flags = (byte) (((newX < 0 ? 0b10000000 : 0) + (newX == 0 ? 0b00000010 : 0)) | cpu.getFlags().toByte());
+            byte flags = (byte) (((newValue < 0 ? 0b10000000 : 0) + (newValue == 0 ? 0b00000010 : 0)) | cpu.getFlags().toByte());
             cpu.getFlags().fromByte(flags);
             return true;
         }

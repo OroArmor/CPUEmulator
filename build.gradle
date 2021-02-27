@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'org.cadixdev.licenser' version '0.5.0'
+}
+
+group 'com.oroarmor'
+version '1.0.0-beta'
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "failed", "standard-out"
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+}
+
+license {
+}
+
+task sourcesJar(type: Jar, group: "build") {
+    classifier("sources")
+    dependsOn(jar)
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, group: "build") {
+    classifier("javadoc")
+    dependsOn(jar)
+    from javadoc.destinationDir
+}
+
+jar {
+    finalizedBy(sourcesJar)
+    finalizedBy(javadocJar)
+}

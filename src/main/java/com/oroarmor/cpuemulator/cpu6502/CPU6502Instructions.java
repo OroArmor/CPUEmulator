@@ -27,6 +27,7 @@ package com.oroarmor.cpuemulator.cpu6502;
 import java.util.Arrays;
 
 import com.oroarmor.cpuemulator.cpu6502.instructions.LoadOperations;
+import com.oroarmor.cpuemulator.cpu6502.instructions.StoreOperations;
 
 // regex : (\w*\((0x\S*), (\w*)::(\w*), AddressingModes::(\w*)\, (\d)\),?)
 // replace : /**\n * Runs {@link $3#$4(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#$5(int, CPU6502, Memory)}, Opcode: <code>$2</code>, Max Cycles: $6\n */\n$1
@@ -115,8 +116,25 @@ public enum CPU6502Instructions {
      */
     LDY_ABSY(0xBC, LoadOperations::loadY, AddressingModes::absoluteX, 5),
 
-    /* */
-    STA, STX, STY,
+    /* Store Operations */
+
+    /* Store Accumulator */
+    STA_ZP(0x85, StoreOperations::storeAccumulator, AddressingModes::zeroPage, 3),
+    STA_ZPX(0x95, StoreOperations::storeAccumulator, AddressingModes::zeroPageX, 4),
+    STA_ABS(0x8D, StoreOperations::storeAccumulator, AddressingModes::absolute, 4),
+    STA_ABSX(0x9D, StoreOperations::storeAccumulator, AddressingModes::absoluteX, 5),
+    STA_ABSY(0x99, StoreOperations::storeAccumulator, AddressingModes::absoluteY, 5),
+    STA_INX(0x9D, StoreOperations::storeAccumulator, AddressingModes::indirectX, 6),
+    STA_INY(0x99, StoreOperations::storeAccumulator, AddressingModes::indirectY, 6),
+
+    /* Store X */
+    STX_ZP(0x86, StoreOperations::storeX, AddressingModes::zeroPage, 3),
+    STX_ZPY(0x96, StoreOperations::storeX, AddressingModes::zeroPageY, 4),
+    STX_ABS(0x8E, StoreOperations::storeX, AddressingModes::absolute, 4),
+    /* Store Y */
+    STY_ZP(0x84, StoreOperations::storeY, AddressingModes::zeroPage, 3),
+    STY_ZPX(0x94, StoreOperations::storeY, AddressingModes::zeroPageX, 4),
+    STY_ABS(0x8C, StoreOperations::storeY, AddressingModes::absolute, 4),
 
     /* */
     TAX, TAY, TXA, TYA,

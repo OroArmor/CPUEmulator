@@ -116,24 +116,62 @@ public enum CPU6502Instructions {
      */
     LDY_ABSY(0xBC, LoadOperations::loadY, AddressingModes::absoluteX, 5),
 
-    /* Store Operations */
-
-    /* Store Accumulator */
+    /* STA Operations */
+    /**
+     * Runs {@link StoreOperations#storeAccumulator(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPage(int, CPU6502, Memory)}, Opcode: <code>0x85</code>, Max Cycles: 3
+     */
     STA_ZP(0x85, StoreOperations::storeAccumulator, AddressingModes::zeroPage, 3),
+    /**
+     * Runs {@link StoreOperations#storeAccumulator(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPageX(int, CPU6502, Memory)}, Opcode: <code>0x95</code>, Max Cycles: 4
+     */
     STA_ZPX(0x95, StoreOperations::storeAccumulator, AddressingModes::zeroPageX, 4),
+    /**
+     * Runs {@link StoreOperations#storeAccumulator(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Memory)}, Opcode: <code>0x8D</code>, Max Cycles: 4
+     */
     STA_ABS(0x8D, StoreOperations::storeAccumulator, AddressingModes::absolute, 4),
+    /**
+     * Runs {@link StoreOperations#storeAccumulator(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absoluteX(int, CPU6502, Memory)}, Opcode: <code>0x9D</code>, Max Cycles: 5
+     */
     STA_ABSX(0x9D, StoreOperations::storeAccumulator, AddressingModes::absoluteX, 5),
+    /**
+     * Runs {@link StoreOperations#storeAccumulator(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absoluteY(int, CPU6502, Memory)}, Opcode: <code>0x99</code>, Max Cycles: 5
+     */
     STA_ABSY(0x99, StoreOperations::storeAccumulator, AddressingModes::absoluteY, 5),
+    /**
+     * Runs {@link StoreOperations#storeAccumulator(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#indirectX(int, CPU6502, Memory)}, Opcode: <code>0x9D</code>, Max Cycles: 6
+     */
     STA_INX(0x9D, StoreOperations::storeAccumulator, AddressingModes::indirectX, 6),
+    /**
+     * Runs {@link StoreOperations#storeAccumulator(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#indirectY(int, CPU6502, Memory)}, Opcode: <code>0x99</code>, Max Cycles: 6
+     */
     STA_INY(0x99, StoreOperations::storeAccumulator, AddressingModes::indirectY, 6),
 
-    /* Store X */
+    /* STX Operations */
+    /**
+     * Runs {@link StoreOperations#storeX(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPage(int, CPU6502, Memory)}, Opcode: <code>0x86</code>, Max Cycles: 3
+     */
     STX_ZP(0x86, StoreOperations::storeX, AddressingModes::zeroPage, 3),
+    /**
+     * Runs {@link StoreOperations#storeX(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPageY(int, CPU6502, Memory)}, Opcode: <code>0x96</code>, Max Cycles: 4
+     */
     STX_ZPY(0x96, StoreOperations::storeX, AddressingModes::zeroPageY, 4),
+    /**
+     * Runs {@link StoreOperations#storeX(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Memory)}, Opcode: <code>0x8E</code>, Max Cycles: 4
+     */
     STX_ABS(0x8E, StoreOperations::storeX, AddressingModes::absolute, 4),
-    /* Store Y */
+
+    /* STY Operations */
+    /**
+     * Runs {@link StoreOperations#storeY(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPage(int, CPU6502, Memory)}, Opcode: <code>0x84</code>, Max Cycles: 3
+     */
     STY_ZP(0x84, StoreOperations::storeY, AddressingModes::zeroPage, 3),
+    /**
+     * Runs {@link StoreOperations#storeY(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPageX(int, CPU6502, Memory)}, Opcode: <code>0x94</code>, Max Cycles: 4
+     */
     STY_ZPX(0x94, StoreOperations::storeY, AddressingModes::zeroPageX, 4),
+    /**
+     * Runs {@link StoreOperations#storeY(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Memory)}, Opcode: <code>0x8C</code>, Max Cycles: 4
+     */
     STY_ABS(0x8C, StoreOperations::storeY, AddressingModes::absolute, 4),
 
     /* */

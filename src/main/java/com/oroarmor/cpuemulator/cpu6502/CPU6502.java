@@ -69,7 +69,12 @@ public class CPU6502 {
             return;
         }
 
-        currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction) ? null : currentInstruction;
+        if (currentInstructionCycle > currentInstruction.getMaxCycles()) {
+            throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", currentInstruction, currentInstruction.getMaxCycles(), currentInstructionCycle));
+        }
+        if (currentInstruction.getAddressingMode().address(currentInstructionCycle, this, memory)) {
+            currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction) ? null : currentInstruction;
+        }
         currentInstructionCycle++;
     }
 

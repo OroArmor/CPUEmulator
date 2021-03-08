@@ -24,7 +24,6 @@
 
 package com.oroarmor.cpuemulator.cpu6502.instructions;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
@@ -66,17 +65,10 @@ public class StoreOperations {
      * @see CPU6502Instructions.CPU6502InstructionProcessor
      */
     public static boolean storeValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Supplier<Integer> registerGetter) {
-        if (currentOpCycle > instruction.getMaxCycles()) {
-            throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", instruction, instruction.getMaxCycles(), currentOpCycle));
-        }
-
-        if (instruction.getAddressingMode().address(currentOpCycle, cpu, memory)) {
-            int index = cpu.getCurrentAddressPointer();
-            byte newValue = registerGetter.get().byteValue();
-            memory.setByte(index, newValue);
-            cpu.incrementProgramCounter();
-            return true;
-        }
-        return false;
+        int index = cpu.getCurrentAddressPointer();
+        byte newValue = registerGetter.get().byteValue();
+        memory.setByte(index, newValue);
+        cpu.incrementProgramCounter();
+        return true;
     }
 }

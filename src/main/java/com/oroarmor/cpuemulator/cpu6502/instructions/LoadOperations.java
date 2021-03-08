@@ -65,20 +65,13 @@ public class LoadOperations {
      * @see CPU6502Instructions.CPU6502InstructionProcessor
      */
     public static boolean loadValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Consumer<Byte> registerSetter) {
-        if (currentOpCycle > instruction.getMaxCycles()) {
-            throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", instruction, instruction.getMaxCycles(), currentOpCycle));
-        }
+        int index = cpu.getCurrentAddressPointer();
+        byte newValue = memory.read(index);
+        registerSetter.accept(newValue);
+        cpu.incrementProgramCounter();
 
-        if (instruction.getAddressingMode().address(currentOpCycle, cpu, memory)) {
-            int index = cpu.getCurrentAddressPointer();
-            byte newValue = memory.read(index);
-            registerSetter.accept(newValue);
-            cpu.incrementProgramCounter();
-
-            byte flags = (byte) (((newValue < 0 ? 0b10000000 : 0) + (newValue == 0 ? 0b00000010 : 0)) | cpu.getFlags().toByte());
-            cpu.getFlags().fromByte(flags);
-            return true;
-        }
-        return false;
+        byte flags = (byte) (((newValue < 0 ? 0b10000000 : 0) + (newValue == 0 ? 0b00000010 : 0)) | cpu.getFlags().toByte());
+        cpu.getFlags().fromByte(flags);
+        return true;
     }
 }

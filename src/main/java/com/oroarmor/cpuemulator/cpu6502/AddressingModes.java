@@ -31,14 +31,20 @@ public class AddressingModes {
     private static int indirectReadAddress = -1;
 
     /**
+     * Implied Addressing Mode
+     *
+     * @see AddressingMode#address(int, CPU6502, Memory)
+     */
+    public static boolean implied(int currentOpCycle, CPU6502 cpu, Memory memory) {
+        return currentOpCycle > 1;
+    }
+
+    /**
      * Loads the address from the {@link CPU6502#getProgramCounter} into the {@link CPU6502#getCurrentAddressPointer()}
      *
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean immediate(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle != 1) {
-            throw new IllegalArgumentException("Immediate addressing only takes one cycle");
-        }
         cpu.setCurrentAddressPointer(cpu.getProgramCounter());
         cpu.incrementProgramCounter();
         return true;
@@ -50,10 +56,6 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean zeroPage(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 2) {
-            throw new IllegalArgumentException("Zero page addressing only takes two cycles");
-        }
-
         if (currentOpCycle == 1) {
             cpu.setCurrentAddressPointer(memory.read(cpu.getProgramCounter()));
             cpu.incrementProgramCounter();
@@ -70,10 +72,6 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean zeroPageX(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 3) {
-            throw new IllegalArgumentException("Zero page with x addressing only takes two cycles");
-        }
-
         if (currentOpCycle == 1) {
             cpu.setCurrentAddressPointer(memory.read(cpu.getProgramCounter()));
             cpu.incrementProgramCounter();
@@ -95,10 +93,6 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean zeroPageY(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 3) {
-            throw new IllegalArgumentException("Zero page with y addressing only takes two cycles");
-        }
-
         if (currentOpCycle == 1) {
             cpu.setCurrentAddressPointer(memory.read(cpu.getProgramCounter()));
             cpu.incrementProgramCounter();
@@ -120,10 +114,6 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean absolute(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 3) {
-            throw new IllegalArgumentException("Absolute addressing only takes three cycles");
-        }
-
         if (currentOpCycle == 1) {
             cpu.setCurrentAddressPointer(Byte.toUnsignedInt(memory.read(cpu.getProgramCounter())));
             cpu.incrementProgramCounter();
@@ -146,10 +136,6 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean absoluteX(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 4) {
-            throw new IllegalArgumentException("Absolute addressing with x addressing only takes 4 cycles");
-        }
-
         if (currentOpCycle == 1) {
             cpu.setCurrentAddressPointer(Byte.toUnsignedInt(memory.read(cpu.getProgramCounter())));
             cpu.incrementProgramCounter();
@@ -177,10 +163,6 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean absoluteY(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 4) {
-            throw new IllegalArgumentException("Absolute addressing with y addressing only takes 4 cycles");
-        }
-
         if (currentOpCycle == 1) {
             cpu.setCurrentAddressPointer(Byte.toUnsignedInt(memory.read(cpu.getProgramCounter())));
             cpu.incrementProgramCounter();
@@ -202,16 +184,41 @@ public class AddressingModes {
     }
 
     /**
+     * Loads the value that is pointed from the value the current program counter points to. <br>
+     * <code>pc -> ind_addr -> value</code>
+     *
+     * @see AddressingMode#address(int, CPU6502, Memory)
+     */
+    public static boolean indirect(int currentOpCycle, CPU6502 cpu, Memory memory) {
+        if (currentOpCycle == 1) {
+            indirectReadAddress = Byte.toUnsignedInt(memory.read(cpu.getProgramCounter()));
+            cpu.incrementProgramCounter();
+            return false;
+        }
+        if (currentOpCycle == 2) {
+            indirectReadAddress |= Byte.toUnsignedInt(memory.read(cpu.getProgramCounter())) << 8;
+            cpu.incrementProgramCounter();
+            return false;
+        }
+        if (currentOpCycle == 3) {
+            cpu.setCurrentAddressPointer(memory.read(indirectReadAddress));
+            return false;
+        }
+        if ((indirectReadAddress & 0x00FF) == 0x00FF) {
+            cpu.setCurrentAddressPointer(Byte.toUnsignedInt(memory.read(indirectReadAddress & 0xFF00)) << 8 | cpu.getCurrentAddressPointer());
+        } else {
+            cpu.setCurrentAddressPointer(Byte.toUnsignedInt(memory.read(indirectReadAddress + 1)) << 8 | cpu.getCurrentAddressPointer());
+        }
+        return true;
+    }
+
+    /**
      * Loads the address from the zero page with the value at the PC, adding the X register to the high and low bits, <code>($PC + 1 + X) << 8 + ($PC + X)</code> {@link CPU6502#getProgramCounter} = PC, {@link CPU6502#getXRegister} = X into the {@link CPU6502#getCurrentAddressPointer()}<br>
      * This normally takes 4 cycles, but if adding <code>X</code> causes the address to wrap around to stay in the zero page, it will take an additional cycle
      *
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean indirectX(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 5) {
-            throw new IllegalArgumentException("Indirect with x addressing only takes five cycles");
-        }
-
         if (currentOpCycle == 1) {
             indirectReadAddress = Byte.toUnsignedInt(memory.read(cpu.getProgramCounter()));
             cpu.incrementProgramCounter();
@@ -238,10 +245,6 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean indirectY(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        if (currentOpCycle > 5) {
-            throw new IllegalArgumentException("Indirect with y addressing only takes five cycles");
-        }
-
         if (currentOpCycle == 1) {
             indirectReadAddress = Byte.toUnsignedInt(memory.read(cpu.getProgramCounter()));
             cpu.incrementProgramCounter();

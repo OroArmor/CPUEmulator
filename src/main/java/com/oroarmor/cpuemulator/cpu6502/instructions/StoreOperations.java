@@ -62,7 +62,7 @@ public class StoreOperations {
      * Stores the value from the supplier into the address specified by the {@link CPU6502Instructions#getAddressingMode}
      *
      * @param registerGetter The consumer for setting the cpu register
-     * @see CPU6502Instructions.CPU6502InstructionProcessor
+     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
      */
     public static boolean storeValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Supplier<Integer> registerGetter) {
         int index = cpu.getCurrentAddressPointer();

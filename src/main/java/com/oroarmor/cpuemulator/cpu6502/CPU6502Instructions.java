@@ -26,6 +26,7 @@ package com.oroarmor.cpuemulator.cpu6502;
 
 import java.util.Arrays;
 
+import com.oroarmor.cpuemulator.cpu6502.instructions.JumpOperations;
 import com.oroarmor.cpuemulator.cpu6502.instructions.LoadOperations;
 import com.oroarmor.cpuemulator.cpu6502.instructions.StoreOperations;
 
@@ -181,7 +182,26 @@ public enum CPU6502Instructions {
     ADC, SBC, CMP, CPX, CPY,
     INC, INX, INY, DEC, DEX, DEY,
     ASL, LSR, ROL, ROR,
-    JMP, JSR, RTS,
+
+    /* Jump Operations */
+    /**
+     * Runs {@link JumpOperations#jump(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Memory)}, Opcode: <code>0x4C</code>, Max Cycles: 3
+     */
+    JMP_ABS(0x4C, JumpOperations::jump, AddressingModes::absolute, 3),
+    /**
+     * Runs {@link JumpOperations#jump(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#indirect(int, CPU6502, Memory)}, Opcode: <code>0x6C</code>, Max Cycles: 5
+     */
+    JMP_IND(0x6C, JumpOperations::jump, AddressingModes::indirect, 5),
+    /**
+     * Runs {@link JumpOperations#jumpSubRoutine(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Memory)}, Opcode: <code>0x20</code>, Max Cycles: 6
+     */
+    JSR(0x20, JumpOperations::jumpSubRoutine, AddressingModes::absolute, 6),
+    /**
+     * Runs {@link JumpOperations#returnSubRoutine(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Memory)}, Opcode: <code>0x60</code>, Max Cycles: 6
+     */
+    RTS(0x60, JumpOperations::returnSubRoutine, AddressingModes::implied, 6),
+
+
     BCC, BCS, BEQ, BMI, BNE, BPL, BVC, BVS,
     CLC, CLD, CLI, CLV, SEC, SED, SEI,
     BRK, NOP, RTI;

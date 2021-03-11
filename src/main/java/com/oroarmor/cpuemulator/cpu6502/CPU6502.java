@@ -30,7 +30,7 @@ package com.oroarmor.cpuemulator.cpu6502;
 public class CPU6502 {
     private final Flags flags = new Flags();
     private int programCounter = 0xFFFC;
-    private int nextFreeStackLocation = 0x0;
+    private int stackPointer = 0xFD;
     private int accumulator = 0x0;
     private int xRegister = 0x0;
     private int yRegister = 0x0;
@@ -44,7 +44,7 @@ public class CPU6502 {
      */
     public void reset() {
         programCounter = 0xFFFC;
-        nextFreeStackLocation = 0x0;
+        stackPointer = 0xFD;
         accumulator = 0x0;
         xRegister = 0x0;
         yRegister = 0x0;
@@ -62,7 +62,9 @@ public class CPU6502 {
         if (currentInstruction == null) {
             currentInstruction = CPU6502Instructions.getFrom(memory.read(programCounter));
             if (currentInstruction == null || memory.read(programCounter) == 0x00) {
+                System.out.println(currentInstructionCycle);
                 throw new UnsupportedOperationException(String.format("Unknown Op Code: %s", Integer.toHexString(memory.read(programCounter)).toUpperCase()));
+
             }
             programCounter++;
             currentInstructionCycle = 1;
@@ -75,6 +77,12 @@ public class CPU6502 {
         if (currentInstruction.getAddressingMode().address(currentInstructionCycle, this, memory)) {
             currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction) ? null : currentInstruction;
         }
+
+        if(currentInstructionCycle == 2 && currentInstruction == CPU6502Instructions.JMP_ABS) {
+            currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction);
+            currentInstruction = null;
+        }
+
         currentInstructionCycle++;
     }
 
@@ -99,12 +107,20 @@ public class CPU6502 {
         this.programCounter = programCounter;
     }
 
-    public int getNextFreeStackLocation() {
-        return nextFreeStackLocation;
+    public int getStackPointer() {
+        return stackPointer;
     }
 
-    public void setNextFreeStackLocation(byte nextFreeStackLocation) {
-        this.nextFreeStackLocation = nextFreeStackLocation;
+    public void setStackPointer(byte stackPointer) {
+        this.stackPointer = stackPointer;
+    }
+
+    public void decrementStackPointer() {
+        this.stackPointer--;
+    }
+
+    public void incrementStackPointer() {
+        this.stackPointer++;
     }
 
     public int getAccumulator() {

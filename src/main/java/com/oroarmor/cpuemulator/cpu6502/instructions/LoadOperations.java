@@ -62,7 +62,7 @@ public class LoadOperations {
      * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into the consumer for the register set
      *
      * @param registerSetter The consumer for setting the cpu register
-     * @see CPU6502Instructions.CPU6502InstructionProcessor
+     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
      */
     public static boolean loadValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Consumer<Byte> registerSetter) {
         int index = cpu.getCurrentAddressPointer();

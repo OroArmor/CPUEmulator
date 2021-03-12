@@ -29,6 +29,7 @@ import java.util.Arrays;
 import com.oroarmor.cpuemulator.cpu6502.instructions.JumpOperations;
 import com.oroarmor.cpuemulator.cpu6502.instructions.LoadOperations;
 import com.oroarmor.cpuemulator.cpu6502.instructions.StoreOperations;
+import com.oroarmor.cpuemulator.cpu6502.instructions.TransferOperations;
 
 // regex : (\w*\((0x\S*), (\w*)::(\w*), AddressingModes::(\w*)\, (\d)\),?)
 // replace : /**\n * Runs {@link $3#$4(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#$5(int, CPU6502, Memory)}, Opcode: <code>$2</code>, Max Cycles: $6\n */\n$1
@@ -175,8 +176,25 @@ public enum CPU6502Instructions {
      */
     STY_ABS(0x8C, StoreOperations::storeY, AddressingModes::absolute, 4),
 
-    /* */
-    TAX, TAY, TXA, TYA,
+    /* Transfer Operations */
+    /**
+     * Runs {@link TransferOperations#transferAX(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Memory)}, Opcode: <code>0xAA</code>, Max Cycles: 2
+     */
+    TAX(0xAA, TransferOperations::transferAX, AddressingModes::implied, 2),
+    /**
+     * Runs {@link TransferOperations#transferAY(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Memory)}, Opcode: <code>0xA8</code>, Max Cycles: 2
+     */
+    TAY(0xA8, TransferOperations::transferAY, AddressingModes::implied, 2),
+    /**
+     * Runs {@link TransferOperations#transferXA(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Memory)}, Opcode: <code>0xBA</code>, Max Cycles: 2
+     */
+    TXA(0xBA, TransferOperations::transferXA, AddressingModes::implied, 2),
+    /**
+     * Runs {@link TransferOperations#transferYA(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Memory)}, Opcode: <code>0x8A</code>, Max Cycles: 2
+     */
+    TYA(0x8A, TransferOperations::transferYA, AddressingModes::implied, 2),
+
+
     TSX, TXS, PHA, PHP, PLA, PLP,
     AND, EOR, ORA, BIT,
     ADC, SBC, CMP, CPX, CPY,

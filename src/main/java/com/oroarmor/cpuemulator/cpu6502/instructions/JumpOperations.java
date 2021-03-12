@@ -70,6 +70,10 @@ public class JumpOperations {
      * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
      */
     public static boolean returnSubRoutine(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
+        if(currentOpCycle < 2){
+            return false;
+        }
+
         if (currentOpCycle == 2) {
             cpu.incrementStackPointer();
             return false;

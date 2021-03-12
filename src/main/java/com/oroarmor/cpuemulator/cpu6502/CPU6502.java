@@ -62,9 +62,7 @@ public class CPU6502 {
         if (currentInstruction == null) {
             currentInstruction = CPU6502Instructions.getFrom(memory.read(programCounter));
             if (currentInstruction == null || memory.read(programCounter) == 0x00) {
-                System.out.println(currentInstructionCycle);
                 throw new UnsupportedOperationException(String.format("Unknown Op Code: %s", Integer.toHexString(memory.read(programCounter)).toUpperCase()));
-
             }
             programCounter++;
             currentInstructionCycle = 1;
@@ -74,6 +72,7 @@ public class CPU6502 {
         if (currentInstructionCycle > currentInstruction.getMaxCycles()) {
             throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", currentInstruction, currentInstruction.getMaxCycles(), currentInstructionCycle));
         }
+
         if (currentInstruction.getAddressingMode().address(currentInstructionCycle, this, memory)) {
             currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction) ? null : currentInstruction;
         }
@@ -111,7 +110,7 @@ public class CPU6502 {
         return stackPointer;
     }
 
-    public void setStackPointer(byte stackPointer) {
+    public void setStackPointer(int stackPointer) {
         this.stackPointer = stackPointer;
     }
 
@@ -127,7 +126,7 @@ public class CPU6502 {
         return accumulator;
     }
 
-    public void setAccumulator(byte accumulator) {
+    public void setAccumulator(int accumulator) {
         this.accumulator = accumulator;
     }
 
@@ -135,7 +134,7 @@ public class CPU6502 {
         return xRegister;
     }
 
-    public void setXRegister(byte xRegister) {
+    public void setXRegister(int xRegister) {
         this.xRegister = xRegister;
     }
 
@@ -143,7 +142,7 @@ public class CPU6502 {
         return yRegister;
     }
 
-    public void setYRegister(byte yRegister) {
+    public void setYRegister(int yRegister) {
         this.yRegister = yRegister;
     }
 

@@ -36,7 +36,7 @@ public class AddressingModes {
      * @see AddressingMode#address(int, CPU6502, Memory)
      */
     public static boolean implied(int currentOpCycle, CPU6502 cpu, Memory memory) {
-        return currentOpCycle > 1;
+        return true;
     }
 
     /**

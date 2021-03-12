@@ -28,46 +28,46 @@ import java.util.function.Supplier;
 
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
-import com.oroarmor.cpuemulator.cpu6502.Memory;
+import com.oroarmor.cpuemulator.cpu6502.Bus;
 
 public class StoreOperations {
     /**
      * Stores the value in the {@link CPU6502#getAccumulator} at the address specified by the {@link CPU6502Instructions#getAddressingMode}
      *
-     * @see StoreOperations#storeValue(int, CPU6502, Memory, CPU6502Instructions, Supplier)
+     * @see StoreOperations#storeValue(int, CPU6502, Bus, CPU6502Instructions, Supplier)
      */
-    public static boolean storeAccumulator(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        return storeValue(currentOpCycle, cpu, memory, instruction, cpu::getAccumulator);
+    public static boolean storeAccumulator(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
+        return storeValue(currentOpCycle, cpu, bus, instruction, cpu::getAccumulator);
     }
 
     /**
      * Stores the value in the {@link CPU6502#getXRegister} at the address specified by the {@link CPU6502Instructions#getAddressingMode}
      *
-     * @see StoreOperations#storeValue(int, CPU6502, Memory, CPU6502Instructions, Supplier)
+     * @see StoreOperations#storeValue(int, CPU6502, Bus, CPU6502Instructions, Supplier)
      */
-    public static boolean storeX(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        return storeValue(currentOpCycle, cpu, memory, instruction, cpu::getXRegister);
+    public static boolean storeX(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
+        return storeValue(currentOpCycle, cpu, bus, instruction, cpu::getXRegister);
     }
 
     /**
      * Stores the value in the {@link CPU6502#getYRegister} at the address specified by the {@link CPU6502Instructions#getAddressingMode}
      *
-     * @see StoreOperations#storeValue(int, CPU6502, Memory, CPU6502Instructions, Supplier)
+     * @see StoreOperations#storeValue(int, CPU6502, Bus, CPU6502Instructions, Supplier)
      */
-    public static boolean storeY(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        return storeValue(currentOpCycle, cpu, memory, instruction, cpu::getYRegister);
+    public static boolean storeY(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
+        return storeValue(currentOpCycle, cpu, bus, instruction, cpu::getYRegister);
     }
 
     /**
      * Stores the value from the supplier into the address specified by the {@link CPU6502Instructions#getAddressingMode}
      *
      * @param registerGetter The consumer for setting the cpu register
-     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
+     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
-    public static boolean storeValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Supplier<Integer> registerGetter) {
+    public static boolean storeValue(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction, Supplier<Integer> registerGetter) {
         int index = cpu.getCurrentAddressPointer();
         byte newValue = registerGetter.get().byteValue();
-        memory.setByte(index, newValue);
+        bus.setByte(index, newValue);
         cpu.incrementProgramCounter();
         return true;
     }

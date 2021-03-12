@@ -27,15 +27,15 @@ package com.oroarmor.cpuemulator.cpu6502.instructions;
 import com.oroarmor.cpuemulator.cpu6502.AddressingModes.AddressingMode;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
-import com.oroarmor.cpuemulator.cpu6502.Memory;
+import com.oroarmor.cpuemulator.cpu6502.Bus;
 
 public class JumpOperations {
     /**
      * Sets the stack pointer to the address specified by the {@link AddressingMode}
      *
-     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
+     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
-    public static boolean jump(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
+    public static boolean jump(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
         cpu.setProgramCounter(cpu.getCurrentAddressPointer());
         return true;
     }
@@ -43,20 +43,20 @@ public class JumpOperations {
     /**
      * Sets the stack pointer to the address specified by the {@link AddressingMode} and pushes the current program counter minus one onto the stack
      *
-     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
+     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
-    public static boolean jumpSubRoutine(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
+    public static boolean jumpSubRoutine(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
         if (currentOpCycle == 3) {
             cpu.setProgramCounter(cpu.getProgramCounter() - 1);
             return false;
         }
         if (currentOpCycle == 4) {
-            memory.setByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter() >> 8) & 0x00FF));
+            bus.setByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter() >> 8) & 0x00FF));
             cpu.decrementStackPointer();
             return false;
         }
 
-        memory.setByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter()) & 0x00FF));
+        bus.setByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter()) & 0x00FF));
         cpu.decrementStackPointer();
 
         cpu.setProgramCounter(cpu.getCurrentAddressPointer());
@@ -67,10 +67,10 @@ public class JumpOperations {
     /**
      * Sets the program counter to the value on the stack, then adds one
      *
-     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
+     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
-    public static boolean returnSubRoutine(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        if(currentOpCycle < 2){
+    public static boolean returnSubRoutine(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
+        if (currentOpCycle < 2) {
             return false;
         }
 
@@ -79,7 +79,7 @@ public class JumpOperations {
             return false;
         }
         if (currentOpCycle == 3) {
-            byte lo = memory.read(0x0100 + cpu.getStackPointer());
+            byte lo = bus.readByte(0x0100 + cpu.getStackPointer());
             cpu.setProgramCounter(Byte.toUnsignedInt(lo));
             return false;
         }
@@ -88,7 +88,7 @@ public class JumpOperations {
             return false;
         }
         if (currentOpCycle == 5) {
-            byte high = memory.read(0x0100 + cpu.getStackPointer());
+            byte high = bus.readByte(0x0100 + cpu.getStackPointer());
             cpu.setProgramCounter(Byte.toUnsignedInt(high) << 8 | cpu.getProgramCounter());
             return false;
         }

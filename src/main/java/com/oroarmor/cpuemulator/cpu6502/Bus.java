@@ -25,9 +25,9 @@
 package com.oroarmor.cpuemulator.cpu6502;
 
 /**
- * A wrapper class for the memory of the cpu
+ * A wrapper class for the bus of the cpu
  */
-public class Memory {
+public class Bus {
     /**
      * The memory
      */
@@ -49,7 +49,7 @@ public class Memory {
      * @param location The location
      * @return The value
      */
-    public byte read(int location) {
+    public byte readByte(int location) {
         return memory[location];
     }
 }

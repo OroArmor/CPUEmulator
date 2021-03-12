@@ -28,45 +28,45 @@ import java.util.function.Consumer;
 
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
-import com.oroarmor.cpuemulator.cpu6502.Memory;
+import com.oroarmor.cpuemulator.cpu6502.Bus;
 
 public class LoadOperations {
     /**
      * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into {@link CPU6502#getAccumulator}
      *
-     * @see LoadOperations#loadValue(int, CPU6502, Memory, CPU6502Instructions, Consumer)
+     * @see LoadOperations#loadValue(int, CPU6502, Bus, CPU6502Instructions, Consumer)
      */
-    public static boolean loadAccumulator(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setAccumulator);
+    public static boolean loadAccumulator(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
+        return loadValue(currentOpCycle, cpu, bus, instruction, cpu::setAccumulator);
     }
 
     /**
      * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into {@link CPU6502#getXRegister()}
      *
-     * @see LoadOperations#loadValue(int, CPU6502, Memory, CPU6502Instructions, Consumer)
+     * @see LoadOperations#loadValue(int, CPU6502, Bus, CPU6502Instructions, Consumer)
      */
-    public static boolean loadX(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setXRegister);
+    public static boolean loadX(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
+        return loadValue(currentOpCycle, cpu, bus, instruction, cpu::setXRegister);
     }
 
     /**
      * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into {@link CPU6502#getYRegister()}
      *
-     * @see LoadOperations#loadValue(int, CPU6502, Memory, CPU6502Instructions, Consumer)
+     * @see LoadOperations#loadValue(int, CPU6502, Bus, CPU6502Instructions, Consumer)
      */
-    public static boolean loadY(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction) {
-        return loadValue(currentOpCycle, cpu, memory, instruction, cpu::setYRegister);
+    public static boolean loadY(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
+        return loadValue(currentOpCycle, cpu, bus, instruction, cpu::setYRegister);
     }
 
     /**
      * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into the consumer for the register set
      *
      * @param registerSetter The consumer for setting the cpu register
-     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
+     * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
-    public static boolean loadValue(int currentOpCycle, CPU6502 cpu, Memory memory, CPU6502Instructions instruction, Consumer<Byte> registerSetter) {
+    public static boolean loadValue(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction, Consumer<Byte> registerSetter) {
         int index = cpu.getCurrentAddressPointer();
-        byte newValue = memory.read(index);
+        byte newValue = bus.readByte(index);
         registerSetter.accept(newValue);
         cpu.incrementProgramCounter();
 

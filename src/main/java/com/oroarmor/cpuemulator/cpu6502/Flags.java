@@ -147,6 +147,11 @@ public class Flags {
         return this.toByte() == flags.toByte();
     }
 
+    @Override
+    public int hashCode() {
+        return Byte.toUnsignedInt(this.toByte());
+    }
+
     /**
      * Gets the flag at the index to the value
      *

@@ -26,20 +26,20 @@ package com.oroarmor.cpuemulator.cpu6502.instructions;
 
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
-import com.oroarmor.cpuemulator.cpu6502.Memory;
+import com.oroarmor.cpuemulator.cpu6502.Bus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JumpTests {
+class JumpTests {
     private CPU6502 cpu;
-    private Memory memory;
+    private Bus bus;
 
     @BeforeEach
     public void reset() {
         cpu = new CPU6502();
-        memory = new Memory();
+        bus = new Bus();
     }
 
     @Test
@@ -47,17 +47,17 @@ public class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        memory.setByte(0xFFFC, CPU6502Instructions.JMP_IND.getCode());
-        memory.setByte(0xFFFD, (byte) 0x00);
-        memory.setByte(0xFFFE, (byte) 0x10);
-        memory.setByte(0x1000, (byte) 0x00);
-        memory.setByte(0x1001, (byte) 0x20);
+        bus.setByte(0xFFFC, CPU6502Instructions.JMP_IND.getCode());
+        bus.setByte(0xFFFD, (byte) 0x00);
+        bus.setByte(0xFFFE, (byte) 0x10);
+        bus.setByte(0x1000, (byte) 0x00);
+        bus.setByte(0x1001, (byte) 0x20);
 
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
 
         assertEquals(0x2000, cpu.getProgramCounter(), "JMP Ind sets the correct program counter");
     }
@@ -67,13 +67,13 @@ public class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        memory.setByte(0xFFFC, CPU6502Instructions.JMP_ABS.getCode());
-        memory.setByte(0xFFFD, (byte) 0x00);
-        memory.setByte(0xFFFE, (byte) 0x10);
+        bus.setByte(0xFFFC, CPU6502Instructions.JMP_ABS.getCode());
+        bus.setByte(0xFFFD, (byte) 0x00);
+        bus.setByte(0xFFFE, (byte) 0x10);
 
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
 
         assertEquals(0x1000, cpu.getProgramCounter(), "JMP Abs sets the correct program counter");
     }
@@ -83,16 +83,16 @@ public class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        memory.setByte(0xFFFC, CPU6502Instructions.JSR.getCode());
-        memory.setByte(0xFFFD, (byte) 0x00);
-        memory.setByte(0xFFFE, (byte) 0x10);
+        bus.setByte(0xFFFC, CPU6502Instructions.JSR.getCode());
+        bus.setByte(0xFFFD, (byte) 0x00);
+        bus.setByte(0xFFFE, (byte) 0x10);
 
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
+        cpu.tick(bus);
 
         assertEquals(0x1000, cpu.getProgramCounter(), "JSR sets the correct program counter");
     }
@@ -102,24 +102,14 @@ public class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        memory.setByte(0xFFFC, CPU6502Instructions.JSR.getCode());
-        memory.setByte(0xFFFD, (byte) 0x00);
-        memory.setByte(0xFFFE, (byte) 0x10);
-        memory.setByte(0x1000, CPU6502Instructions.RTS.getCode());
+        bus.setByte(0xFFFC, CPU6502Instructions.JSR.getCode());
+        bus.setByte(0xFFFD, (byte) 0x00);
+        bus.setByte(0xFFFE, (byte) 0x10);
+        bus.setByte(0x1000, CPU6502Instructions.RTS.getCode());
 
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
+        for (int i = 0; i < 12; i++) {
+            cpu.tick(bus);
+        }
 
         assertEquals(0xFFFE, cpu.getProgramCounter(), "RTS sets the correct program counter");
     }

@@ -26,12 +26,16 @@ package com.oroarmor.cpuemulator.cpu6502.instructions.load;
 
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
-import com.oroarmor.cpuemulator.cpu6502.Memory;
+import com.oroarmor.cpuemulator.cpu6502.Bus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LoadYTest {
+    private CPU6502 cpu;
+    private Bus bus;
+
     private static void checkYAndFlags(byte expectedY, byte expectedFlags, CPU6502 cpu, String ldaType) {
         assertEquals(expectedY, cpu.getYRegister(), String.format("LDY %s sets correct value, %d", ldaType, expectedY));
         StringBuilder expectedFlagsString = new StringBuilder(Integer.toBinaryString(expectedFlags));
@@ -43,165 +47,62 @@ class LoadYTest {
         assertEquals(expectedFlags, cpu.getFlags().toByte(), String.format("LDY %s sets Flags (%s) correctly with %d", ldaType, "0b" + expectedFlagsString, expectedY));
     }
 
-    @Test
-    void loadYImmediate() {
-        CPU6502 cpu = new CPU6502();
-        Memory memory = new Memory();
+    @BeforeEach
+    public void reset() {
+        cpu = new CPU6502();
+        bus = new Bus();
+    }
 
-        // ldy #80
-        // a0  #80
-        memory.setByte(0xFFFC, CPU6502Instructions.LDY_IMM.getCode());
-        memory.setByte(0xFFFD, (byte) 0x80);
+    private void testLoadY(CPU6502 cpu, Bus bus, byte value, int location, CPU6502Instructions instruction, String name, int cycles) {
+        bus.setByte(0xFFFC, instruction.getCode());
+        bus.setByte(location, value);
         byte flags = cpu.getFlags().toByte();
 
-        cpu.tick(memory);
-        cpu.tick(memory);
+        for (int i = 0; i < cycles; i++) {
+            cpu.tick(bus);
+        }
 
-        checkYAndFlags((byte) 0x80, (byte) (flags | 0b10000000), cpu, "immediate with negative number");
-
-        // ldy #00
-        // a0  #00
+        checkYAndFlags(value, (byte) (flags | ((value < 0) ? 0b10000000 : 0) | ((value == 0) ? 0b00000010 : 0)), cpu, name);
         cpu.reset();
-        flags = cpu.getFlags().toByte();
-        memory.setByte(0xFFFD, (byte) 0x00);
+    }
 
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x00, (byte) (flags | 0b00000010), cpu, "immediate with zero value");
+    @Test
+    void loadYImmediate() {
+        testLoadY(cpu, bus, (byte) 0x80, 0xFFFD, CPU6502Instructions.LDY_IMM, "immediate with negative number", 2);
+        testLoadY(cpu, bus, (byte) 0x00, 0xFFFD, CPU6502Instructions.LDY_IMM, "immediate with zero value", 2);
     }
 
     @Test
     void loadYZeroPage() {
-        CPU6502 cpu = new CPU6502();
-        Memory memory = new Memory();
-
-        // ldy $10
-        // a4  10
-        memory.setByte(0xFFFC, CPU6502Instructions.LDY_ZP.getCode());
-        memory.setByte(0xFFFD, (byte) 0x10);
-        memory.setByte(0x0010, (byte) 0x80);
-        byte flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x80, (byte) (flags | 0b10000000), cpu, "zero page with negative number");
-
-        memory.setByte(0x0010, (byte) 0x00);
-        cpu.reset();
-        flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x00, (byte) (flags | 0b00000010), cpu, "zero page with zero value");
+        bus.setByte(0xFFFD, (byte) 0x10);
+        testLoadY(cpu, bus, (byte) 0x80, 0x0010, CPU6502Instructions.LDY_ZP, "zero page with negative number", 3);
+        testLoadY(cpu, bus, (byte) 0x00, 0x0010, CPU6502Instructions.LDY_ZP, "zero page with zero value", 3);
     }
 
     @Test
     void loadYZeroPageX() {
-        CPU6502 cpu = new CPU6502();
-        Memory memory = new Memory();
-
         cpu.setXRegister((byte) 0x10);
-
-        // ldy $10,x
-        // b4  $10
-        memory.setByte(0xFFFC, CPU6502Instructions.LDY_ZPY.getCode());
-        memory.setByte(0xFFFD, (byte) 0x10);
-        memory.setByte(0x0020, (byte) 0x80);
-        byte flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x80, (byte) (flags | 0b10000000), cpu, "zero page with x with negative number");
-
-        cpu.setXRegister((byte) 0xFF);
-        memory.setByte(0xFFFD, (byte) 0x10);
-        memory.setByte(0x0010, (byte) 0x00);
-        cpu.reset();
-        flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x00, (byte) (flags | 0b00000010), cpu, "zero page with x with zero value");
+        bus.setByte(0xFFFD, (byte) 0x10);
+        testLoadY(cpu, bus, (byte) 0x80, 0x0020, CPU6502Instructions.LDY_ZPY, "zero page with x with negative number", 4);
+        testLoadY(cpu, bus, (byte) 0x00, 0x0020, CPU6502Instructions.LDY_ZPY, "zero page with x with zero value", 4);
     }
 
     @Test
     void loadYAbsolute() {
-        CPU6502 cpu = new CPU6502();
-        Memory memory = new Memory();
-
-        // ldy $ABCD
-        // ac  $ABCD
-
-        memory.setByte(0xFFFC, CPU6502Instructions.LDY_ABS.getCode());
-        memory.setByte(0xFFFD, (byte) 0xCD);
-        memory.setByte(0xFFFE, (byte) 0xAB);
-        memory.setByte(0xABCD, (byte) 0x80);
-        byte flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x80, (byte) (flags | 0b10000000), cpu, "absolute with negative number");
-
-        memory.setByte(0xABCD, (byte) 0x00);
-        cpu.reset();
-        flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x00, (byte) (flags | 0b00000010), cpu, "absolute with zero value");
+        bus.setByte(0xFFFD, (byte) 0xCD);
+        bus.setByte(0xFFFE, (byte) 0xAB);
+        testLoadY(cpu, bus, (byte) 0x80, 0xABCD, CPU6502Instructions.LDY_ABS, "absolute with negative number", 4);
+        testLoadY(cpu, bus, (byte) 0x00, 0xABCD, CPU6502Instructions.LDY_ABS, "absolute with zero value", 4);
     }
 
     @Test
     void loadYAbsoluteY() {
-        CPU6502 cpu = new CPU6502();
-        Memory memory = new Memory();
-
         cpu.setXRegister((byte) 0x1);
+        bus.setByte(0xFFFD, (byte) 0xCD);
+        bus.setByte(0xFFFE, (byte) 0xAB);
+        testLoadY(cpu, bus, (byte) 0x80, 0xABCE, CPU6502Instructions.LDY_ABSX, "absolute with x with negative number", 4);
 
-        // ldy $ABCD, x
-        // bc  $ABCD
-
-        memory.setByte(0xFFFC, CPU6502Instructions.LDY_ABSY.getCode());
-        memory.setByte(0xFFFD, (byte) 0xCD);
-        memory.setByte(0xFFFE, (byte) 0xAB);
-        memory.setByte(0xABCE, (byte) 0x80);
-        byte flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x80, (byte) (flags | 0b10000000), cpu, "absolute with x with negative number");
-
-        cpu.reset();
-        memory.setByte(0xAC00, (byte) 0x00);
         cpu.setXRegister((byte) (0xAC00 - 0xABCD));
-        flags = cpu.getFlags().toByte();
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        checkYAndFlags((byte) 0x00, (byte) (flags | 0b00000010), cpu, "absolute with x wrapping with zero value");
+        testLoadY(cpu, bus, (byte) 0x00, 0xAC00, CPU6502Instructions.LDY_ABSX, "absolute with x wrapping with zero value", 5);
     }
 }

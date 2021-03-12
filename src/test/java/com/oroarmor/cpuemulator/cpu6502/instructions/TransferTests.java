@@ -24,69 +24,46 @@
 
 package com.oroarmor.cpuemulator.cpu6502.instructions;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
-import com.oroarmor.cpuemulator.cpu6502.Memory;
-import org.junit.jupiter.api.BeforeEach;
+import com.oroarmor.cpuemulator.cpu6502.Bus;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TransferTests {
-    private CPU6502 cpu;
-    private Memory memory;
+class TransferTests {
+    private void transfer(CPU6502Instructions instruction, Consumer<Byte> setter, Supplier<Integer> setValue, byte value, CPU6502 cpu, Bus bus) {
+        setter.accept(value);
 
-    @BeforeEach
-    public void reset() {
-        cpu = new CPU6502();
-        memory = new Memory();
+        bus.setByte(0xFFFC, instruction.getCode());
+
+        cpu.tick(bus);
+        cpu.tick(bus);
+
+        assertEquals(value, (int) setValue.get(), instruction + " sets the " + instruction.toString().substring(2) + " register");
+        assertEquals(value < 0, cpu.getFlags().getFlag((byte) 7), "Negative flag set with negative value");
+        assertEquals(value == 0, cpu.getFlags().getFlag((byte) 1), "Zero flag set with zero value");
+        cpu.reset();
     }
 
     @Test
-    public void transferAtoX(){
-        cpu.setAccumulator(0x80);
+    public void transferTests() {
+        CPU6502 cpu = new CPU6502();
+        Bus bus = new Bus();
 
-        memory.setByte(0xFFFC, CPU6502Instructions.TAX.getCode());
+        transfer(CPU6502Instructions.TAX, cpu::setAccumulator, cpu::getXRegister, (byte) 0x80, cpu, bus);
+        transfer(CPU6502Instructions.TAX, cpu::setAccumulator, cpu::getXRegister, (byte) 0x00, cpu, bus);
 
-        cpu.tick(memory);
-        cpu.tick(memory);
+        transfer(CPU6502Instructions.TAY, cpu::setAccumulator, cpu::getYRegister, (byte) 0x80, cpu, bus);
+        transfer(CPU6502Instructions.TAY, cpu::setAccumulator, cpu::getYRegister, (byte) 0x00, cpu, bus);
 
-        assertEquals(cpu.getAccumulator(), cpu.getXRegister(), "TAX sets the X register");
-    }
+        transfer(CPU6502Instructions.TXA, cpu::setXRegister, cpu::getAccumulator, (byte) 0x80, cpu, bus);
+        transfer(CPU6502Instructions.TXA, cpu::setXRegister, cpu::getAccumulator, (byte) 0x00, cpu, bus);
 
-    @Test
-    public void transferAtoY(){
-        cpu.setAccumulator(0x80);
-
-        memory.setByte(0xFFFC, CPU6502Instructions.TAY.getCode());
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        assertEquals(cpu.getAccumulator(), cpu.getYRegister(), "TAY sets the Y register");
-    }
-
-    @Test
-    public void transferXtoA(){
-        cpu.setXRegister(0x80);
-
-        memory.setByte(0xFFFC, CPU6502Instructions.TXA.getCode());
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        assertEquals(cpu.getXRegister(), cpu.getAccumulator(), "TXA sets the A register");
-    }
-
-    @Test
-    public void transferYtoA(){
-        cpu.setYRegister(0x80);
-
-        memory.setByte(0xFFFC, CPU6502Instructions.TYA.getCode());
-
-        cpu.tick(memory);
-        cpu.tick(memory);
-
-        assertEquals(cpu.getYRegister(), cpu.getAccumulator(), "TYA sets the A register");
+        transfer(CPU6502Instructions.TYA, cpu::setYRegister, cpu::getAccumulator, (byte) 0x80, cpu, bus);
+        transfer(CPU6502Instructions.TYA, cpu::setYRegister, cpu::getAccumulator, (byte) 0x00, cpu, bus);
     }
 }

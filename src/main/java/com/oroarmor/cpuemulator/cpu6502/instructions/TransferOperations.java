@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions.CPU6502InstructionProcessor;
-import com.oroarmor.cpuemulator.cpu6502.Memory;
+import com.oroarmor.cpuemulator.cpu6502.Bus;
 
 public class TransferOperations {
     /**
@@ -39,40 +39,43 @@ public class TransferOperations {
      * @param suppliedRegister  The getter for the register
      * @param consumingRegister The setter for the register
      * @return true
-     * 
-     * @see CPU6502InstructionProcessor#runInstruction(int, CPU6502, Memory, CPU6502Instructions)
+     * @see CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
-    public static boolean transfer(CPU6502 cpu6502, Supplier<Integer> suppliedRegister, Consumer<Integer> consumingRegister) {
-        consumingRegister.accept(suppliedRegister.get());
-        cpu6502.incrementProgramCounter();
+    public static boolean transfer(CPU6502 cpu, Supplier<Integer> suppliedRegister, Consumer<Byte> consumingRegister) {
+        byte newValue = (byte) (int) suppliedRegister.get();
+        consumingRegister.accept(newValue);
+        cpu.incrementProgramCounter();
+
+        byte flags = (byte) ((newValue < 0 ? 0b10000000 : 0) | (newValue == 0 ? 0b00000010 : 0) | cpu.getFlags().toByte());
+        cpu.getFlags().fromByte(flags);
         return true;
     }
 
     /**
      * Transfers the A register to the X register
      */
-    public static boolean transferAX(int i, CPU6502 cpu6502, Memory memory, CPU6502Instructions instructions) {
-        return transfer(cpu6502, cpu6502::getAccumulator, cpu6502::setXRegister);
+    public static boolean transferAX(int i, CPU6502 cpu, Bus bus, CPU6502Instructions instructions) {
+        return transfer(cpu, cpu::getAccumulator, cpu::setXRegister);
     }
 
     /**
      * Transfers the A register to the Y register
      */
-    public static boolean transferAY(int i, CPU6502 cpu6502, Memory memory, CPU6502Instructions instructions) {
-        return transfer(cpu6502, cpu6502::getAccumulator, cpu6502::setYRegister);
+    public static boolean transferAY(int i, CPU6502 cpu, Bus bus, CPU6502Instructions instructions) {
+        return transfer(cpu, cpu::getAccumulator, cpu::setYRegister);
     }
 
     /**
      * Transfers the X register to the A register
      */
-    public static boolean transferXA(int i, CPU6502 cpu6502, Memory memory, CPU6502Instructions instructions) {
-        return transfer(cpu6502, cpu6502::getXRegister, cpu6502::setAccumulator);
+    public static boolean transferXA(int i, CPU6502 cpu, Bus bus, CPU6502Instructions instructions) {
+        return transfer(cpu, cpu::getXRegister, cpu::setAccumulator);
     }
 
     /**
      * Transfers the Y register to the A register
      */
-    public static boolean transferYA(int i, CPU6502 cpu6502, Memory memory, CPU6502Instructions instructions) {
-        return transfer(cpu6502, cpu6502::getYRegister, cpu6502::setAccumulator);
+    public static boolean transferYA(int i, CPU6502 cpu, Bus bus, CPU6502Instructions instructions) {
+        return transfer(cpu, cpu::getYRegister, cpu::setAccumulator);
     }
 }

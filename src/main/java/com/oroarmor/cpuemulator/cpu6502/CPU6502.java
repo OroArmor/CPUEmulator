@@ -56,13 +56,13 @@ public class CPU6502 {
     /**
      * Clocks the CPU once
      *
-     * @param memory The memory for the CPU
+     * @param bus The memory for the CPU
      */
-    public void tick(Memory memory) {
+    public void tick(Bus bus) {
         if (currentInstruction == null) {
-            currentInstruction = CPU6502Instructions.getFrom(memory.read(programCounter));
-            if (currentInstruction == null || memory.read(programCounter) == 0x00) {
-                throw new UnsupportedOperationException(String.format("Unknown Op Code: %s", Integer.toHexString(memory.read(programCounter)).toUpperCase()));
+            currentInstruction = CPU6502Instructions.getFrom(bus.readByte(programCounter));
+            if (currentInstruction == null || bus.readByte(programCounter) == 0x00) {
+                throw new UnsupportedOperationException(String.format("Unknown Op Code: %s", Integer.toHexString(bus.readByte(programCounter)).toUpperCase()));
             }
             programCounter++;
             currentInstructionCycle = 1;
@@ -73,12 +73,12 @@ public class CPU6502 {
             throw new IllegalArgumentException(String.format("%s only has %d operation(s), %d was requested", currentInstruction, currentInstruction.getMaxCycles(), currentInstructionCycle));
         }
 
-        if (currentInstruction.getAddressingMode().address(currentInstructionCycle, this, memory)) {
-            currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction) ? null : currentInstruction;
+        if (currentInstruction.getAddressingMode().address(currentInstructionCycle, this, bus)) {
+            currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, bus, currentInstruction) ? null : currentInstruction;
         }
 
-        if(currentInstructionCycle == 2 && currentInstruction == CPU6502Instructions.JMP_ABS) {
-            currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, memory, currentInstruction);
+        if (currentInstructionCycle == 2 && currentInstruction == CPU6502Instructions.JMP_ABS) {
+            currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, bus, currentInstruction);
             currentInstruction = null;
         }
 
@@ -126,7 +126,7 @@ public class CPU6502 {
         return accumulator;
     }
 
-    public void setAccumulator(int accumulator) {
+    public void setAccumulator(byte accumulator) {
         this.accumulator = accumulator;
     }
 
@@ -134,7 +134,7 @@ public class CPU6502 {
         return xRegister;
     }
 
-    public void setXRegister(int xRegister) {
+    public void setXRegister(byte xRegister) {
         this.xRegister = xRegister;
     }
 
@@ -142,7 +142,7 @@ public class CPU6502 {
         return yRegister;
     }
 
-    public void setYRegister(int yRegister) {
+    public void setYRegister(byte yRegister) {
         this.yRegister = yRegister;
     }
 

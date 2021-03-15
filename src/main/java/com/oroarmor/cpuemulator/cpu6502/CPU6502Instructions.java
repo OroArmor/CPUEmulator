@@ -108,7 +108,7 @@ public enum CPU6502Instructions {
     /**
      * Runs {@link LoadOperations#loadY(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPageX(int, CPU6502, Bus)}, Opcode: <code>0xB4</code>, Max Cycles: 4
      */
-    LDY_ZPY(0xB4, LoadOperations::loadY, AddressingModes::zeroPageX, 4),
+    LDY_ZPX(0xB4, LoadOperations::loadY, AddressingModes::zeroPageX, 4),
     /**
      * Runs {@link LoadOperations#loadY(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Bus)}, Opcode: <code>0xAC</code>, Max Cycles: 4
      */

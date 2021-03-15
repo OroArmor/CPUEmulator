@@ -281,7 +281,7 @@ public class AddressingModes {
          *
          * @param currentOpCycle The current clock cycle into this operation. Starts at 1 because 0 is fetching the instruction
          * @param cpu            The {@link CPU6502} to operate on
-         * @param bus         The {@link Bus} to read from and write to
+         * @param bus            The {@link Bus} to read from and write to
          * @return The address for the instruction to read from
          */
         boolean address(int currentOpCycle, CPU6502 cpu, Bus bus);

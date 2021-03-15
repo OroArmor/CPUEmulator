@@ -313,7 +313,7 @@ public enum CPU6502Instructions {
          *
          * @param currentOpCycle The current clock cycle into this operation. Starts at 1 because 0 is fetching the instruction
          * @param cpu            The {@link CPU6502} to operate on
-         * @param bus         The {@link Bus} to read from and write to
+         * @param bus            The {@link Bus} to read from and write to
          * @param instruction    The {@link CPU6502Instructions} for this run of the instruction
          * @return True when the operation has completed. This tells the CPU to fetch the next instruction.
          */

@@ -27,10 +27,10 @@ package com.oroarmor.cpuemulator.cpu6502.instructions;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions.CPU6502InstructionProcessor;
-import com.oroarmor.cpuemulator.cpu6502.Bus;
 
 public class TransferOperations {
     /**

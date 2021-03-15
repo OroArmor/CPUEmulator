@@ -194,7 +194,6 @@ public enum CPU6502Instructions {
      */
     TYA(0x8A, TransferOperations::transferYA, AddressingModes::implied, 2),
 
-
     TSX, TXS, PHA, PHP, PLA, PLP,
     AND, EOR, ORA, BIT,
     ADC, SBC, CMP, CPX, CPY,
@@ -218,7 +217,6 @@ public enum CPU6502Instructions {
      * Runs {@link JumpOperations#returnSubRoutine(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0x60</code>, Max Cycles: 6
      */
     RTS(0x60, JumpOperations::returnSubRoutine, AddressingModes::implied, 6),
-
 
     BCC, BCS, BEQ, BMI, BNE, BPL, BVC, BVS,
     CLC, CLD, CLI, CLV, SEC, SED, SEI,

@@ -27,6 +27,7 @@ package com.oroarmor.cpuemulator.cpu6502.instructions;
 import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
+import com.oroarmor.cpuemulator.cpu6502.TestBus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,14 +36,14 @@ class StoreTests {
     @Test
     public void storeAccumulatorTest() {
         CPU6502 cpu = new CPU6502();
-        Bus bus = new Bus();
+        Bus bus = new TestBus();
 
         cpu.setAccumulator((byte) 127);
 
         // sta $80
         // 85   80
-        bus.setByte(0xFFFC, CPU6502Instructions.STA_ZP.getCode());
-        bus.setByte(0xFFFD, (byte) 0x80);
+        bus.writeByte(0xFFFC, CPU6502Instructions.STA_ZP.getCode());
+        bus.writeByte(0xFFFD, (byte) 0x80);
 
         cpu.tick(bus);
         cpu.tick(bus);
@@ -54,14 +55,14 @@ class StoreTests {
     @Test
     public void storeXTest() {
         CPU6502 cpu = new CPU6502();
-        Bus bus = new Bus();
+        Bus bus = new TestBus();
 
         cpu.setXRegister((byte) 127);
 
         // stx $80
         // 86   80
-        bus.setByte(0xFFFC, CPU6502Instructions.STX_ZP.getCode());
-        bus.setByte(0xFFFD, (byte) 0x80);
+        bus.writeByte(0xFFFC, CPU6502Instructions.STX_ZP.getCode());
+        bus.writeByte(0xFFFD, (byte) 0x80);
 
         cpu.tick(bus);
         cpu.tick(bus);
@@ -73,14 +74,14 @@ class StoreTests {
     @Test
     public void storeYTest() {
         CPU6502 cpu = new CPU6502();
-        Bus bus = new Bus();
+        Bus bus = new TestBus();
 
         cpu.setYRegister((byte) 127);
 
         // sty $80
         // 84   80
-        bus.setByte(0xFFFC, CPU6502Instructions.STY_ZP.getCode());
-        bus.setByte(0xFFFD, (byte) 0x80);
+        bus.writeByte(0xFFFC, CPU6502Instructions.STY_ZP.getCode());
+        bus.writeByte(0xFFFD, (byte) 0x80);
 
         cpu.tick(bus);
         cpu.tick(bus);

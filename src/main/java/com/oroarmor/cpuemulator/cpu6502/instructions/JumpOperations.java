@@ -29,7 +29,7 @@ import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
 
-public class JumpOperations {
+public final class JumpOperations {
     /**
      * Sets the stack pointer to the address specified by the {@link AddressingMode}
      *
@@ -51,12 +51,12 @@ public class JumpOperations {
             return false;
         }
         if (currentOpCycle == 4) {
-            bus.setByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter() >> 8) & 0x00FF));
+            bus.writeByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter() >> 8) & 0x00FF));
             cpu.decrementStackPointer();
             return false;
         }
 
-        bus.setByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter()) & 0x00FF));
+        bus.writeByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter()) & 0x00FF));
         cpu.decrementStackPointer();
 
         cpu.setProgramCounter(cpu.getCurrentAddressPointer());

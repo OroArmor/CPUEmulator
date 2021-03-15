@@ -24,14 +24,15 @@
 
 package com.oroarmor.cpuemulator.cpu6502;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * A wrapper class for the bus of the cpu
+ * A wrapper class for the bus of the cpu. If two {@link BusDevice}s listen to the same location, the one added first
+ * will be notified, and no other devices will be notified
  */
 public class Bus {
-    /**
-     * The memory
-     */
-    public final byte[] memory = new byte[0xFFFF];
+    public final List<BusDevice> devices = new ArrayList<>();
 
     /**
      * Sets the byte at location to the new value
@@ -39,8 +40,13 @@ public class Bus {
      * @param location The location
      * @param value    The value
      */
-    public void setByte(int location, byte value) {
-        memory[location] = value;
+    public void writeByte(int location, byte value) {
+        for (BusDevice device : devices) {
+            if (device.isValidAddress(location)) {
+                device.writeValue(location, value);
+                return;
+            }
+        }
     }
 
     /**
@@ -50,6 +56,49 @@ public class Bus {
      * @return The value
      */
     public byte readByte(int location) {
-        return memory[location];
+        for (BusDevice device : devices) {
+            if (device.isValidAddress(location)) {
+                return device.readValue(location);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Attaches a device to the bus
+     *
+     * @param device The device to attach
+     */
+    public void attachDevice(BusDevice device) {
+        devices.add(device);
+    }
+
+    /**
+     * An interface for all devices that can read and write from the bus
+     */
+    public interface BusDevice {
+        /**
+         * Reads a value from this device
+         *
+         * @param location The location to read from
+         * @return The value
+         */
+        byte readValue(int location);
+
+        /**
+         * Writes a value to this device
+         *
+         * @param location The location to write to
+         * @param value    The value
+         */
+        void writeValue(int location, byte value);
+
+        /**
+         * Returns if the location is a valid address that the device listens too
+         *
+         * @param location The location
+         * @return True when the device listens to the location
+         */
+        boolean isValidAddress(int location);
     }
 }

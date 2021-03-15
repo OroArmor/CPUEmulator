@@ -30,7 +30,7 @@ import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
 
-public class LoadOperations {
+public final class LoadOperations {
     /**
      * Loads the value at the address specified by the {@link CPU6502Instructions#getAddressingMode} into {@link CPU6502#getAccumulator}
      *

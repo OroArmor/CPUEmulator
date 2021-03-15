@@ -27,6 +27,7 @@ package com.oroarmor.cpuemulator.cpu6502.instructions;
 import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
+import com.oroarmor.cpuemulator.cpu6502.TestBus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ class JumpTests {
     @BeforeEach
     public void reset() {
         cpu = new CPU6502();
-        bus = new Bus();
+        bus = new TestBus();
     }
 
     @Test
@@ -47,11 +48,11 @@ class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        bus.setByte(0xFFFC, CPU6502Instructions.JMP_IND.getCode());
-        bus.setByte(0xFFFD, (byte) 0x00);
-        bus.setByte(0xFFFE, (byte) 0x10);
-        bus.setByte(0x1000, (byte) 0x00);
-        bus.setByte(0x1001, (byte) 0x20);
+        bus.writeByte(0xFFFC, CPU6502Instructions.JMP_IND.getCode());
+        bus.writeByte(0xFFFD, (byte) 0x00);
+        bus.writeByte(0xFFFE, (byte) 0x10);
+        bus.writeByte(0x1000, (byte) 0x00);
+        bus.writeByte(0x1001, (byte) 0x20);
 
         cpu.tick(bus);
         cpu.tick(bus);
@@ -67,9 +68,9 @@ class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        bus.setByte(0xFFFC, CPU6502Instructions.JMP_ABS.getCode());
-        bus.setByte(0xFFFD, (byte) 0x00);
-        bus.setByte(0xFFFE, (byte) 0x10);
+        bus.writeByte(0xFFFC, CPU6502Instructions.JMP_ABS.getCode());
+        bus.writeByte(0xFFFD, (byte) 0x00);
+        bus.writeByte(0xFFFE, (byte) 0x10);
 
         cpu.tick(bus);
         cpu.tick(bus);
@@ -83,9 +84,9 @@ class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        bus.setByte(0xFFFC, CPU6502Instructions.JSR.getCode());
-        bus.setByte(0xFFFD, (byte) 0x00);
-        bus.setByte(0xFFFE, (byte) 0x10);
+        bus.writeByte(0xFFFC, CPU6502Instructions.JSR.getCode());
+        bus.writeByte(0xFFFD, (byte) 0x00);
+        bus.writeByte(0xFFFE, (byte) 0x10);
 
         cpu.tick(bus);
         cpu.tick(bus);
@@ -102,10 +103,10 @@ class JumpTests {
         // JMP ($1000)
         // 6C 10 00
 
-        bus.setByte(0xFFFC, CPU6502Instructions.JSR.getCode());
-        bus.setByte(0xFFFD, (byte) 0x00);
-        bus.setByte(0xFFFE, (byte) 0x10);
-        bus.setByte(0x1000, CPU6502Instructions.RTS.getCode());
+        bus.writeByte(0xFFFC, CPU6502Instructions.JSR.getCode());
+        bus.writeByte(0xFFFD, (byte) 0x00);
+        bus.writeByte(0xFFFE, (byte) 0x10);
+        bus.writeByte(0x1000, CPU6502Instructions.RTS.getCode());
 
         for (int i = 0; i < 12; i++) {
             cpu.tick(bus);

@@ -41,7 +41,7 @@ class LoadYTest extends LoadTestHelpers {
 
     @Test
     void loadYZeroPage() {
-        bus.setByte(0xFFFD, (byte) 0x10);
+        bus.writeByte(0xFFFD, (byte) 0x10);
         testLoadValue(cpu, bus, (byte) 0x80, 0x0010, CPU6502Instructions.LDY_ZP, "zero page with negative number", 3);
         testLoadValue(cpu, bus, (byte) 0x00, 0x0010, CPU6502Instructions.LDY_ZP, "zero page with zero value", 3);
     }
@@ -49,15 +49,15 @@ class LoadYTest extends LoadTestHelpers {
     @Test
     void loadYZeroPageX() {
         cpu.setXRegister((byte) 0x10);
-        bus.setByte(0xFFFD, (byte) 0x10);
+        bus.writeByte(0xFFFD, (byte) 0x10);
         testLoadValue(cpu, bus, (byte) 0x80, 0x0020, CPU6502Instructions.LDY_ZPX, "zero page with x with negative number", 4);
         testLoadValue(cpu, bus, (byte) 0x00, 0x0020, CPU6502Instructions.LDY_ZPX, "zero page with x with zero value", 4);
     }
 
     @Test
     void loadYAbsolute() {
-        bus.setByte(0xFFFD, (byte) 0xCD);
-        bus.setByte(0xFFFE, (byte) 0xAB);
+        bus.writeByte(0xFFFD, (byte) 0xCD);
+        bus.writeByte(0xFFFE, (byte) 0xAB);
         testLoadValue(cpu, bus, (byte) 0x80, 0xABCD, CPU6502Instructions.LDY_ABS, "absolute with negative number", 4);
         testLoadValue(cpu, bus, (byte) 0x00, 0xABCD, CPU6502Instructions.LDY_ABS, "absolute with zero value", 4);
     }
@@ -65,8 +65,8 @@ class LoadYTest extends LoadTestHelpers {
     @Test
     void loadYAbsoluteY() {
         cpu.setXRegister((byte) 0x1);
-        bus.setByte(0xFFFD, (byte) 0xCD);
-        bus.setByte(0xFFFE, (byte) 0xAB);
+        bus.writeByte(0xFFFD, (byte) 0xCD);
+        bus.writeByte(0xFFFE, (byte) 0xAB);
         testLoadValue(cpu, bus, (byte) 0x80, 0xABCE, CPU6502Instructions.LDY_ABSX, "absolute with x with negative number", 4);
 
         cpu.setXRegister((byte) (0xAC00 - 0xABCD));

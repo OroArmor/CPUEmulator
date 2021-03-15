@@ -38,7 +38,7 @@ package com.oroarmor.cpuemulator.cpu6502;
  * <tr><td>7</td><td>Negative Flag</td><td>N</td></tr>
  * </table>
  */
-public class Flags {
+public final class Flags {
     private final boolean unusedFlag = true;
     private boolean carryFlag = false;
     private boolean zeroFlag = false;

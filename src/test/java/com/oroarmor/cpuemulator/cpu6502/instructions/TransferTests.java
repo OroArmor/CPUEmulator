@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
+import com.oroarmor.cpuemulator.cpu6502.TestBus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +39,7 @@ class TransferTests {
     private void transfer(CPU6502Instructions instruction, Consumer<Byte> setter, Supplier<Integer> setValue, byte value, CPU6502 cpu, Bus bus) {
         setter.accept(value);
 
-        bus.setByte(0xFFFC, instruction.getCode());
+        bus.writeByte(0xFFFC, instruction.getCode());
 
         cpu.tick(bus);
         cpu.tick(bus);
@@ -52,7 +53,7 @@ class TransferTests {
     @Test
     public void transferTests() {
         CPU6502 cpu = new CPU6502();
-        Bus bus = new Bus();
+        Bus bus = new TestBus();
 
         transfer(CPU6502Instructions.TAX, cpu::setAccumulator, cpu::getXRegister, (byte) 0x80, cpu, bus);
         transfer(CPU6502Instructions.TAX, cpu::setAccumulator, cpu::getXRegister, (byte) 0x00, cpu, bus);

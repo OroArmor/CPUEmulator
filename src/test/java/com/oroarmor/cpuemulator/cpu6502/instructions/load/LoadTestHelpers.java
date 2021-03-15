@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
+import com.oroarmor.cpuemulator.cpu6502.TestBus;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,12 +49,12 @@ class LoadTestHelpers {
     @BeforeEach
     public void reset() {
         cpu = new CPU6502();
-        bus = new Bus();
+        bus = new TestBus();
     }
 
     protected void testLoadValue(CPU6502 cpu, Bus bus, byte value, int location, CPU6502Instructions instruction, String name, int cycles) {
-        bus.setByte(0xFFFC, instruction.getCode());
-        bus.setByte(location, value);
+        bus.writeByte(0xFFFC, instruction.getCode());
+        bus.writeByte(location, value);
         byte flags = cpu.getFlags().toByte();
 
         for (int i = 0; i < cycles; i++) {

@@ -41,7 +41,7 @@ class LoadAccumulatorTest extends LoadTestHelpers {
 
     @Test
     void loadAccumulatorZeroPage() {
-        bus.setByte(0xFFFD, (byte) 0x10);
+        bus.writeByte(0xFFFD, (byte) 0x10);
         testLoadValue(cpu, bus, (byte) 0x80, 0x0010, CPU6502Instructions.LDA_ZP, "zero page with negative number", 3);
         testLoadValue(cpu, bus, (byte) 0x00, 0x0010, CPU6502Instructions.LDA_ZP, "zero page with zero value", 3);
     }
@@ -49,7 +49,7 @@ class LoadAccumulatorTest extends LoadTestHelpers {
     @Test
     void loadAccumulatorZeroPageX() {
         cpu.setXRegister((byte) 0x10);
-        bus.setByte(0xFFFD, (byte) 0x10);
+        bus.writeByte(0xFFFD, (byte) 0x10);
         testLoadValue(cpu, bus, (byte) 0x80, 0x0020, CPU6502Instructions.LDA_ZPX, "zero page with x with negative number", 4);
         cpu.setXRegister((byte) 0xFF);
         testLoadValue(cpu, bus, (byte) 0x00, 0x0010, CPU6502Instructions.LDA_ZPX, "zero page with x wrapping with zero value", 4);
@@ -57,19 +57,19 @@ class LoadAccumulatorTest extends LoadTestHelpers {
 
     @Test
     void loadAccumulatorAbsolute() {
-        bus.setByte(0xFFFD, (byte) 0xCD);
-        bus.setByte(0xFFFE, (byte) 0xAB);
+        bus.writeByte(0xFFFD, (byte) 0xCD);
+        bus.writeByte(0xFFFE, (byte) 0xAB);
         testLoadValue(cpu, bus, (byte) 0x80, 0xABCD, CPU6502Instructions.LDA_ABS, "absolute with negative number", 4);
 
-        bus.setByte(0xABCD, (byte) 0x00);
+        bus.writeByte(0xABCD, (byte) 0x00);
         testLoadValue(cpu, bus, (byte) 0x00, 0xABCD, CPU6502Instructions.LDA_ABS, "absolute with zero value", 4);
     }
 
     @Test
     void loadAccumulatorAbsoluteX() {
         cpu.setXRegister((byte) 0x1);
-        bus.setByte(0xFFFD, (byte) 0xCD);
-        bus.setByte(0xFFFE, (byte) 0xAB);
+        bus.writeByte(0xFFFD, (byte) 0xCD);
+        bus.writeByte(0xFFFE, (byte) 0xAB);
         testLoadValue(cpu, bus, (byte) 0x80, 0xABCE, CPU6502Instructions.LDA_ABSX, "absolute with x with negative number", 4);
 
         cpu.setXRegister((byte) (0xAC00 - 0xABCD));
@@ -79,8 +79,8 @@ class LoadAccumulatorTest extends LoadTestHelpers {
     @Test
     void loadAccumulatorAbsoluteY() {
         cpu.setYRegister((byte) 0x1);
-        bus.setByte(0xFFFD, (byte) 0xCD);
-        bus.setByte(0xFFFE, (byte) 0xAB);
+        bus.writeByte(0xFFFD, (byte) 0xCD);
+        bus.writeByte(0xFFFE, (byte) 0xAB);
         testLoadValue(cpu, bus, (byte) 0x80, 0xABCE, CPU6502Instructions.LDA_ABSY, "absolute with y with negative number", 4);
 
         cpu.setYRegister((byte) (0xAC00 - 0xABCD));
@@ -90,8 +90,8 @@ class LoadAccumulatorTest extends LoadTestHelpers {
     @Test
     void loadAccumulatorIndirectX() {
         cpu.setXRegister((byte) 0x10);
-        bus.setByte(0x0010, (byte) 0xCD);
-        bus.setByte(0x0011, (byte) 0xAB);
+        bus.writeByte(0x0010, (byte) 0xCD);
+        bus.writeByte(0x0011, (byte) 0xAB);
         testLoadValue(cpu, bus, (byte) 0x80, 0xABCD, CPU6502Instructions.LDA_INX, "indirect x with negative number", 6);
         testLoadValue(cpu, bus, (byte) 0x00, 0xABCD, CPU6502Instructions.LDA_INX, "indirect x with zero value", 6);
     }
@@ -99,15 +99,15 @@ class LoadAccumulatorTest extends LoadTestHelpers {
     @Test
     void loadAccumulatorIndirectY() {
         cpu.setYRegister((byte) 0x10);
-        bus.setByte(0xFFFD, (byte) 0x10);
+        bus.writeByte(0xFFFD, (byte) 0x10);
 
-        bus.setByte(0x0010, (byte) 0x15);
-        bus.setByte(0x0011, (byte) 0x00);
+        bus.writeByte(0x0010, (byte) 0x15);
+        bus.writeByte(0x0011, (byte) 0x00);
         testLoadValue(cpu, bus, (byte) 0x80, 0x0025, CPU6502Instructions.LDA_INY, "indirect y with negative number", 5);
 
         cpu.setYRegister((byte) (0xAC00 - 0xABCD));
-        bus.setByte(0x0010, (byte) 0xCD);
-        bus.setByte(0x0011, (byte) 0xAB);
+        bus.writeByte(0x0010, (byte) 0xCD);
+        bus.writeByte(0x0011, (byte) 0xAB);
         testLoadValue(cpu, bus, (byte) 0x00, 0xAC00, CPU6502Instructions.LDA_INY, "indirect y with zero value wraps", 6);
     }
 }

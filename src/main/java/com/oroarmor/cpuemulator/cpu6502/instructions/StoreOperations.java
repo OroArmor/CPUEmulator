@@ -30,7 +30,7 @@ import com.oroarmor.cpuemulator.cpu6502.Bus;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
 
-public class StoreOperations {
+public final class StoreOperations {
     /**
      * Stores the value in the {@link CPU6502#getAccumulator} at the address specified by the {@link CPU6502Instructions#getAddressingMode}
      *
@@ -67,7 +67,7 @@ public class StoreOperations {
     public static boolean storeValue(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction, Supplier<Integer> registerGetter) {
         int index = cpu.getCurrentAddressPointer();
         byte newValue = registerGetter.get().byteValue();
-        bus.setByte(index, newValue);
+        bus.writeByte(index, newValue);
         cpu.incrementProgramCounter();
         return true;
     }

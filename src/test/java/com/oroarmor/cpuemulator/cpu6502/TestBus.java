@@ -24,32 +24,25 @@
 
 package com.oroarmor.cpuemulator.cpu6502;
 
-import org.junit.jupiter.api.Test;
+public class TestBus extends Bus {
+    public TestBus() {
+        this.attachDevice(new BusDevice() {
+            public final byte[] memory = new byte[0xFFFF];
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+            @Override
+            public byte readValue(int location) {
+                return memory[location];
+            }
 
-public class FlagsTest {
-    @Test
-    public void testFromByte() {
-        Flags f = new Flags();
-        f.fromByte((byte) 0b10100001);
-        assertEquals(new Flags(true, false, false, false, false, false, true), f, "From byte is correct");
-    }
+            @Override
+            public void writeValue(int location, byte value) {
+                memory[location] = value;
+            }
 
-    @Test
-    public void testToByte() {
-        Flags f = new Flags(true, false, false, false, false, false, true);
-        byte b = f.toByte();
-        assertEquals((byte) 0b10100001, b, "To byte is correct");
-    }
-
-    @Test
-    public void testSetFlag() {
-        Flags f = new Flags();
-        f.setFlag((byte) 0, true);
-        assertEquals((byte) 0b00100001, f.toByte(), "Correct bit is set");
-        assertThrows(IllegalArgumentException.class, () -> f.setFlag((byte) 8, true), "Set flag throws exception when bit is > 7");
-        assertThrows(IllegalArgumentException.class, () -> f.setFlag((byte) -1, true), "Set flag throws exception when bit is < 0");
+            @Override
+            public boolean isValidAddress(int location) {
+                return location > 0 && location < 0xFFFF;
+            }
+        });
     }
 }

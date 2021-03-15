@@ -27,7 +27,7 @@ package com.oroarmor.cpuemulator.cpu6502;
 /**
  * The different types of addressing modes the 6502 processor supports
  */
-public class AddressingModes {
+public final class AddressingModes {
     private static int indirectReadAddress = -1;
 
     /**

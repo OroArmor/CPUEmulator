@@ -32,7 +32,7 @@ import com.oroarmor.cpuemulator.cpu6502.CPU6502;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions;
 import com.oroarmor.cpuemulator.cpu6502.CPU6502Instructions.CPU6502InstructionProcessor;
 
-public class TransferOperations {
+public final class TransferOperations {
     /**
      * Sets the value of the consumingRegister with the value of the suppliedRegister
      *

@@ -85,15 +85,9 @@ public class CPU6502 {
         currentInstructionCycle++;
     }
 
-
-    public void incrementProgramCounter() {
-        this.programCounter++;
-    }
-
     public int getCurrentAddressPointer() {
         return currentAddressPointer;
     }
-
     public void setCurrentAddressPointer(int currentAddressPointer) {
         this.currentAddressPointer = currentAddressPointer;
     }
@@ -101,7 +95,9 @@ public class CPU6502 {
     public int getProgramCounter() {
         return programCounter;
     }
-
+    public void incrementProgramCounter() {
+        this.programCounter++;
+    }
     public void setProgramCounter(int programCounter) {
         this.programCounter = programCounter;
     }
@@ -109,23 +105,19 @@ public class CPU6502 {
     public int getStackPointer() {
         return stackPointer;
     }
-
     public void setStackPointer(int stackPointer) {
         this.stackPointer = stackPointer;
     }
-
-    public void decrementStackPointer() {
-        this.stackPointer--;
-    }
-
     public void incrementStackPointer() {
         this.stackPointer++;
+    }
+    public void decrementStackPointer() {
+        this.stackPointer--;
     }
 
     public int getAccumulator() {
         return accumulator;
     }
-
     public void setAccumulator(byte accumulator) {
         this.accumulator = accumulator;
     }
@@ -133,7 +125,6 @@ public class CPU6502 {
     public int getXRegister() {
         return xRegister;
     }
-
     public void setXRegister(byte xRegister) {
         this.xRegister = xRegister;
     }
@@ -141,7 +132,6 @@ public class CPU6502 {
     public int getYRegister() {
         return yRegister;
     }
-
     public void setYRegister(byte yRegister) {
         this.yRegister = yRegister;
     }

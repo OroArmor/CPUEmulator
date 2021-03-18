@@ -26,13 +26,10 @@ package com.oroarmor.cpuemulator.cpu6502;
 
 import java.util.Arrays;
 
-import com.oroarmor.cpuemulator.cpu6502.instructions.JumpOperations;
-import com.oroarmor.cpuemulator.cpu6502.instructions.LoadOperations;
-import com.oroarmor.cpuemulator.cpu6502.instructions.StoreOperations;
-import com.oroarmor.cpuemulator.cpu6502.instructions.TransferOperations;
+import com.oroarmor.cpuemulator.cpu6502.instructions.*;
 
 // regex : (\w*\((0x\S*), (\w*)::(\w*), AddressingModes::(\w*)\, (\d)\),?)
-// replace : /**\n * Runs {@link $3#$4(int, CPU6502, Memory, CPU6502Instructions)} with AddressingMode {@link AddressingModes#$5(int, CPU6502, Memory)}, Opcode: <code>$2</code>, Max Cycles: $6\n */\n$1
+// replace : /**\n * Runs {@link $3#$4(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#$5(int, CPU6502, Bus)}, Opcode: <code>$2</code>, Max Cycles: $6\n */\n$1
 
 /**
  * A Enum Holding all possible operations that the 6502 Processor can run. <br>
@@ -197,7 +194,61 @@ public enum CPU6502Instructions {
     TSX, TXS, PHA, PHP, PLA, PLP,
     AND, EOR, ORA, BIT,
     ADC, SBC, CMP, CPX, CPY,
-    INC, INX, INY, DEC, DEX, DEY,
+
+    /* Increment and Decrement Operations */
+    /**
+     * Runs {@link IncrementOperations#incrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPage(int, CPU6502, Bus)}, Opcode: <code>0xE6</code>, Max Cycles: 5
+     */
+    INC_ZP(0xE6, IncrementOperations::incrementMemory, AddressingModes::zeroPage, 5),
+    /**
+     * Runs {@link IncrementOperations#incrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPageX(int, CPU6502, Bus)}, Opcode: <code>0xF6</code>, Max Cycles: 6
+     */
+    INC_ZPX(0xF6, IncrementOperations::incrementMemory, AddressingModes::zeroPageX, 6),
+    /**
+     * Runs {@link IncrementOperations#incrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Bus)}, Opcode: <code>0xEE</code>, Max Cycles: 6
+     */
+    INC_ABS(0xEE, IncrementOperations::incrementMemory, AddressingModes::absolute, 6),
+    /**
+     * Runs {@link IncrementOperations#incrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absoluteX(int, CPU6502, Bus)}, Opcode: <code>0xFE</code>, Max Cycles: 7
+     */
+    INC_ABSX(0xFE, IncrementOperations::incrementMemory, AddressingModes::absoluteX, 7),
+
+    /**
+     * Runs {@link IncrementOperations#incrementXRegister(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0xE8</code>, Max Cycles: 2
+     */
+    INX(0xE8, IncrementOperations::incrementXRegister, AddressingModes::implied, 2),
+    /**
+     * Runs {@link IncrementOperations#incrementYRegister(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0xC8</code>, Max Cycles: 2
+     */
+    INY(0xC8, IncrementOperations::incrementYRegister, AddressingModes::implied, 2),
+
+    /**
+     * Runs {@link IncrementOperations#decrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPage(int, CPU6502, Bus)}, Opcode: <code>0xC6</code>, Max Cycles: 5
+     */
+    DEC_ZP(0xC6, IncrementOperations::decrementMemory, AddressingModes::zeroPage, 5),
+    /**
+     * Runs {@link IncrementOperations#decrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#zeroPageX(int, CPU6502, Bus)}, Opcode: <code>0xD6</code>, Max Cycles: 6
+     */
+    DEC_ZPX(0xD6, IncrementOperations::decrementMemory, AddressingModes::zeroPageX, 6),
+    /**
+     * Runs {@link IncrementOperations#decrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absolute(int, CPU6502, Bus)}, Opcode: <code>0xCE</code>, Max Cycles: 6
+     */
+    DEC_ABS(0xCE, IncrementOperations::decrementMemory, AddressingModes::absolute, 6),
+    /**
+     * Runs {@link IncrementOperations#decrementMemory(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#absoluteX(int, CPU6502, Bus)}, Opcode: <code>0xDE</code>, Max Cycles: 7
+     */
+    DEC_ABSX(0xDE, IncrementOperations::decrementMemory, AddressingModes::absoluteX, 7),
+
+    /**
+     * Runs {@link IncrementOperations#decrementXRegister(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0xCA</code>, Max Cycles: 2
+     */
+    DEX(0xCA, IncrementOperations::decrementXRegister, AddressingModes::implied, 2),
+    /**
+     * Runs {@link IncrementOperations#decrementYRegister(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0x88</code>, Max Cycles: 2
+     */
+    DEY(0x88, IncrementOperations::decrementYRegister, AddressingModes::implied, 2),
+
+    /* Rotate Operations */
     ASL, LSR, ROL, ROR,
 
     /* Jump Operations */

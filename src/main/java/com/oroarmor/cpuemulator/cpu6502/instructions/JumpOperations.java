@@ -46,11 +46,11 @@ public final class JumpOperations {
      * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
     public static boolean jumpSubRoutine(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
-        if (currentOpCycle == 3) {
+        if (currentOpCycle == 0) {
             cpu.setProgramCounter(cpu.getProgramCounter() - 1);
             return false;
         }
-        if (currentOpCycle == 4) {
+        if (currentOpCycle == 1) {
             bus.writeByte(0x0100 + cpu.getStackPointer(), (byte) ((cpu.getProgramCounter() >> 8) & 0x00FF));
             cpu.decrementStackPointer();
             return false;
@@ -70,24 +70,24 @@ public final class JumpOperations {
      * @see CPU6502Instructions.CPU6502InstructionProcessor#runInstruction(int, CPU6502, Bus, CPU6502Instructions)
      */
     public static boolean returnSubRoutine(int currentOpCycle, CPU6502 cpu, Bus bus, CPU6502Instructions instruction) {
-        if (currentOpCycle < 2) {
+        if(currentOpCycle == 0) {
             return false;
         }
 
-        if (currentOpCycle == 2) {
+        if (currentOpCycle == 1) {
             cpu.incrementStackPointer();
             return false;
         }
-        if (currentOpCycle == 3) {
+        if (currentOpCycle == 2) {
             byte lo = bus.readByte(0x0100 + cpu.getStackPointer());
             cpu.setProgramCounter(Byte.toUnsignedInt(lo));
             return false;
         }
-        if (currentOpCycle == 4) {
+        if (currentOpCycle == 3) {
             cpu.incrementStackPointer();
             return false;
         }
-        if (currentOpCycle == 5) {
+        if (currentOpCycle == 4) {
             byte high = bus.readByte(0x0100 + cpu.getStackPointer());
             cpu.setProgramCounter(Byte.toUnsignedInt(high) << 8 | cpu.getProgramCounter());
             return false;

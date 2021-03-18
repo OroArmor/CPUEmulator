@@ -34,8 +34,10 @@ public class CPU6502 {
     private int accumulator = 0x0;
     private int xRegister = 0x0;
     private int yRegister = 0x0;
+
     private CPU6502Instructions currentInstruction;
     private int currentInstructionCycle;
+    private int instructionStartCycle;
 
     private int currentAddressPointer = 0;
 
@@ -66,6 +68,7 @@ public class CPU6502 {
             }
             programCounter++;
             currentInstructionCycle = 1;
+            instructionStartCycle = -1;
             return;
         }
 
@@ -74,7 +77,8 @@ public class CPU6502 {
         }
 
         if (currentInstruction.getAddressingMode().address(currentInstructionCycle, this, bus)) {
-            currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle, this, bus, currentInstruction) ? null : currentInstruction;
+            instructionStartCycle = instructionStartCycle == -1 ? currentInstructionCycle : instructionStartCycle;
+            currentInstruction = currentInstruction.getInstructionProcessor().runInstruction(currentInstructionCycle - instructionStartCycle, this, bus, currentInstruction) ? null : currentInstruction;
         }
 
         if (currentInstructionCycle == 2 && currentInstruction == CPU6502Instructions.JMP_ABS) {

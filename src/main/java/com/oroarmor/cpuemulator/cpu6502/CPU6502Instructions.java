@@ -270,7 +270,38 @@ public enum CPU6502Instructions {
     RTS(0x60, JumpOperations::returnSubRoutine, AddressingModes::implied, 6),
 
     BCC, BCS, BEQ, BMI, BNE, BPL, BVC, BVS,
-    CLC, CLD, CLI, CLV, SEC, SED, SEI,
+
+    /* Flag Operations */
+    /**
+     * Runs {@link StatusFlagOperations#clearCarryFlag(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0x18</code>, Max Cycles: 2
+     */
+    CLC(0x18, StatusFlagOperations::clearCarryFlag, AddressingModes::implied, 2),
+    /**
+     * Runs {@link StatusFlagOperations#clearDecimalModeFlag(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0xD8</code>, Max Cycles: 2
+     */
+    CLD(0xD8, StatusFlagOperations::clearDecimalModeFlag, AddressingModes::implied, 2),
+    /**
+     * Runs {@link StatusFlagOperations#clearInterruptDisableFlag(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0x58</code>, Max Cycles: 2
+     */
+    CLI(0x58, StatusFlagOperations::clearInterruptDisableFlag, AddressingModes::implied, 2),
+    /**
+     * Runs {@link StatusFlagOperations#clearOverflowFlag(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0xB8</code>, Max Cycles: 2
+     */
+    CLV(0xB8, StatusFlagOperations::clearOverflowFlag, AddressingModes::implied, 2),
+    /**
+     * Runs {@link StatusFlagOperations#setCarryFlag(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0x38</code>, Max Cycles: 2
+     */
+    SEC(0x38, StatusFlagOperations::setCarryFlag, AddressingModes::implied, 2),
+    /**
+     * Runs {@link StatusFlagOperations#setDecimalModeFlag(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0xF8</code>, Max Cycles: 2
+     */
+    SED(0xF8, StatusFlagOperations::setDecimalModeFlag, AddressingModes::implied, 2),
+    /**
+     * Runs {@link StatusFlagOperations#setInterruptDisableFlag(int, CPU6502, Bus, CPU6502Instructions)} with AddressingMode {@link AddressingModes#implied(int, CPU6502, Bus)}, Opcode: <code>0x78</code>, Max Cycles: 2
+     */
+    SEI(0x78, StatusFlagOperations::setInterruptDisableFlag, AddressingModes::implied, 2),
+
+
     BRK, NOP, RTI;
 
     private final byte instruction;
